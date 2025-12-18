@@ -1,0 +1,46 @@
+# Game folders and files
+game/
+binaries/
+clausewitz/
+jomini/
+platform_specific_game_data/
+
+# Game files in root folder
+/*.txt
+
+# Zip files
+*.zip
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+
+# Backup files
+*.old
+*.bak
+*~
+
+# Archive folders in bug reports
+**/archive/
+**/bbcode/
+
