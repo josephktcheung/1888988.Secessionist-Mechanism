@@ -1,0 +1,167 @@
+[center][size=150][b]Bug Report: Secessionists Mechanism[/b][/size][/center]
+
+[b]Description[/b]
+
+The Secessionists mechanism has eleven critical issues:
+
+[b]Issue 1: Same-Culture Countries Forced to Join (Most Severe)[/b]
+
+When Secessionists Rebels, the system automatically searches for nearby same-culture Countries and forcibly calls them to War on the Rebel side. Called Countries cannot refuse. If they have a Truce with the enemy, they are incorrectly judged as actively breaking the Truce, triggering severe penalties (-50 Stability, +1 War Exhaustion, +25 Antagonism). The selection mechanism is hardcoded in the engine and cannot be found in game files, making it impossible for players to predict which country will be called.
+
+[b]CRITICAL FLAW: Original Ownership Completely Ignored[/b]
+
+The system [b]completely ignores original ownership[/b] when selecting which same-culture Country to call, prioritizing cultural dominance over historical claims.
+
+[i]Example from Byzantium save:[/i] Turkish Secessionists Rebellion occurs in territories originally owned by Ottomans. Ottomans still exist and are the original owner. However, the system selects Eretnids (culturally dominant Turkish Country) instead, completely ignoring Ottomans. Ottomans have no opportunity to reclaim their former territories, even though they have the strongest historical claim.
+
+[b]Issue 2: Personal Union Breaking (Severe - VERIFIED)[/b]
+
+When a Personal Union Junior Partner is the culturally dominant Country for a Secessionists Rebellion, it is forcibly called to support the Rebellion against its Senior Partner. This immediately breaks the Personal Union because [code]union_of_crowns_pact[/code] has [code]break_on_war = yes[/code].
+
+[b]VERIFICATION STATUS:[/b]
+[list]
+[*]Personal Union: [b]VERIFIED AFFECTED[/b] (tested with France-Sicily)
+[*]Vassal: [b]VERIFIED EXCLUDED[/b] (tested with France-Sicily)
+[*]Fiefdom: [b]VERIFIED EXCLUDED[/b] (tested with France-Sicily)
+[*]Other subject types (Tributary, Dominion, March, Appanage, Sāmanta, Tǔsī, Uç Bey, etc.): NOT TESTED
+[/list]
+
+This creates an inconsistency where Personal Union are vulnerable while some other subject types are protected.
+
+[b]VERIFICATION:[/b] Tested with France (Senior Partner) and Sicily (Junior Partner). When Sicilian Secessionists Rebelled in France-controlled territory, Sicily was forcibly called, immediately breaking the Personal Union. When Sicily was a Vassal or Fiefdom instead, it was correctly excluded.
+
+[b]Issue 3: Vassal War Leadership Problem (Severe)[/b]
+
+If a player creates a Vassal that becomes the Defender in a Civil War, the player is forcibly dragged into the War but does not become the War Leader. The AI Vassal controls all peace negotiations. The player cannot call Allies, cannot obtain Military Access, and must bear all War costs without control.
+
+[b]Issue 4: Inconsistency in Alliance Auto-Call[/b]
+
+When the player is the defensive War Leader, Allies can be asked to join. But when a Vassal is the defensive War Leader, the player cannot call Allies to join.
+
+[b]Issue 5: Coalition Bypass Mechanism (Severe Exploit)[/b]
+
+When a forcibly called Country is in a Coalition, it cannot call Coalition members to join the War because it is the Attacker. This allows the Defender to bypass Coalition restrictions and attack Coalition members individually.
+
+[b]Issue 6: AI Vassal Suboptimal Peace Decisions[/b]
+
+AI Vassal may choose white peace instead of annexing the Revolter even when annexation cost is very low, causing players to lose territories they should have gained.
+
+[b]Issue 7: Overlord Forced to Join[/b]
+
+Secessionists automatically and forcibly call Overlords to War through [code]join_offensive_wars_always[/code] and [code]join_defensive_wars_always[/code] in [code]secessionists.txt[/code].
+
+[b]Issue 8: Truce Breaking Penalties[/b]
+
+Forcibly called Countries with Truce are incorrectly judged as actively breaking Truce, triggering severe penalties even though they had no choice.
+
+[b]Issue 9: World War Escalation - Asymmetric Alliance Calling (Severe)[/b]
+
+A single local Secessionists Rebellion can escalate into a world War due to asymmetric Alliance calling mechanics. This is [b]worse than historical world Wars[/b] (WW1/WW2) where both sides could coordinate with Allies.
+
+[b]Current EU5 System - Worse Than Historical World Wars:[/b]
+
+When a Secessionists Rebellion breaks out:
+[list]
+[*]The Defender CAN call all its Allies to join the defensive War
+[*]The forcibly called same-culture Country (Attacker) CANNOT call its own Allies because it is the Attacker
+[*]Result: A local Rebellion escalates into a major War where one Alliance bloc fights alone against another bloc's coordinated response
+[/list]
+
+[i]Example Scenario (Late 18th Century - Partition Era):[/i]
+[list]
+[*]Two major Alliance blocs: Bloc A (Russia, Austria, Prussia) vs Bloc B (France, Ottomans, Sweden)
+[*]Polish Secessionists Rebellion breaks out in Russia-controlled territory
+[*]Poland (culturally dominant) is FORCED to join Rebellion's side (Attacker) - NO CHOICE
+[*]Russia (Defender) calls Austria and Prussia → 3 major powers vs Poland
+[*]Poland (Attacker) cannot call France, Ottomans, or Sweden → fights alone against 3 major powers
+[/list]
+
+This creates a dangerous escalation mechanism where the Defender can systematically use Secessionists Rebellions to attack their enemies' Alliance blocs asymmetrically.
+
+[b]Historical Rationality:[/b] This mechanism violates historical logic. In real history (e.g., American Civil War), external Allies had the right to choose whether to intervene, usually choosing neutrality. The game forces Allies to join, which is historically unreasonable.
+
+[b]Issue 10: Annex Revolter Button Misapplied to War Participant Countries (Severe - GAME-BREAKING)[/b]
+
+When a Secessionists Rebellion spawns as a Society of Pops (landless Country with no territory) due to low population size (Province has <50% of the rebelling culture's population), the Rebel Country has no territory. When the Rebel Country's troops are wiped out and the Rebellion is eliminated, the War continues and a war participant Country becomes the War Leader. The Annex Revolter button, designed to annex the entire Revolter Country, can then be used to annex the entire war participant Country (e.g., France - 3rd largest Country at game start) with no Antagonism generated.
+
+[b]Exploitation Flow (England vs France Example):[/b]
+
+[list=1]
+[*][b]England spawns a French Rebellion that becomes a Society of Pops[/b] (Defender - owns rebelling territory with French culture)
+[*][b]France is forcibly called[/b] as Attacker (culturally dominant for French culture)
+[*][b]War structure:[/b] England (Defender/War Leader) vs Rebellion (Attacker/War Leader) + France (Attacker/war participant)
+[*][b]England wipes out Society of Pops troops[/b] (Rebellion eliminated)
+[*][b]War continues[/b] because France is still in the War
+[*][b]France becomes War Leader[/b] (only remaining Attacker)
+[*][b]England gains Warscore[/b] through ticking Warscore ([code]ticking_war_score = 0.5[/code] per month from [code]take_country_nationalist[/code] war goal) and by winning battles, sieging enemy Locations, and establishing blockades
+[*][b]England reaches 10 Warscore[/b] - The Annex Revolter button becomes enabled when England reaches at least 10 Warscore ([code]MIN_WARSCORE_TO_DEMAND = 10[/code] from game defines)
+[*][b]Annex Revolter button becomes available[/b] - Once enabled, this peace option can be used on the war participant Country (France) instead of the eliminated Revolter
+[*][b]England uses Annex Revolter button[/b] to annex the entire France Country
+[*][b]England annexes entire France[/b] at low warscore cost (intended only for annexing the Revolter, not major powers like France)
+[*][b]No Antagonism is generated[/b] - annexing a major power like France should generate massive Antagonism, but the peace option generates none
+[/list]
+
+[b]Technical Details:[/b]
+[list]
+[*]When Rebellion Province has <50% population of rebelling culture, Rebellion spawns as [code]country_type = pop[/code] (Society of Pops - landless with no territory)
+[*]When [code]country_type = pop[/code] troops are eliminated, the Rebellion is removed from the War
+[*]The war participant Country becomes War Leader automatically
+[*][b]BUG:[/b] The [code]take_country_nationalist[/code] war goal has [code]type = take_country[/code], which allows annexing the entire Country via Annex Revolter button
+[*][b]BUG:[/b] No Antagonism is generated when annexing the war participant Country
+[/list]
+
+[b]Impact:[/b]
+[list]
+[*][b]GAME-BREAKING:[/b] Major powers like France (3rd largest Country at game start) can be annexed by smaller Countries like England through this exploit
+[*][b]VERIFIED EXAMPLE 1:[/b] France was annexed by England through this mechanism - England spawned a Rebellion that became a Society of Pops, France was forcibly called, England eliminated Rebels, gained 10 Warscore (minimum required), then used Annex Revolter button to annex entire France, and no Antagonism was generated
+[*][b]VERIFIED EXAMPLE 2:[/b] Jalayirids was annexed by Ottomans through this mechanism - Ottomans had very few Iraqi culture pops in Gumushane location (only 31 Iraqi culture nobles rebelling, <50% of location population), spawning a Rebellion that became a Society of Pops with only 3 soldiers instead of making the location rebel territory. Because it was an Iraqi culture rebellion, Jalayirids (Iraqi culture dominant Country) was forcibly called. Ottomans eliminated the 3 soldiers (Society of Pops disappeared), Jalayirids became War Leader, Ottomans gained 10% Warscore by sieging a few forts, then used Annex Revolter button to annex entire Jalayirids. The annexed land was unintegrated territory requiring manual coring
+[/list]
+
+[b]Issue 11: Subjects Forced to Support Distant Rebellions (Severe)[/b]
+
+Any subject (e.g., Vassal, Secessionists subject, or other subject types) that happens to be culturally dominant for the rebelling culture is forcibly called to support distant rebellions of the same culture, even when they are thousands of kilometers away and have no logical connection to the rebellion.
+
+[b]The Problem:[/b]
+[list]
+[*]When a Secessionists Rebellion breaks out, the system searches for culturally dominant Countries to call
+[*]The system does NOT check if the Country is a subject, its size, or distance to the Rebellion
+[*]Any Country with the same culture as the rebelling population can be called, regardless of whether it is a subject
+[*]Result: Small subjects (e.g., Vassals, Secessionists subjects) get forcibly called to support Rebellions thousands of kilometers away
+[/list]
+
+[b]VERIFIED EXAMPLE:[/b]
+[list]
+[*]Player (Yuán / Ming) has a small Mongolian culture subject (e.g., Vassal or Secessionists subject) in Mongolia region
+[*]A Mongolian Secessionists Rebellion breaks out in Georgia (6000+ km away)
+[*]The small subject is FORCED to join the Rebellion's side (Attacker) - NO CHOICE
+[*]Player's subject gets dragged into a War far away, player has no control
+[*]Player must search through war participant Countries to find out why their subject is at War
+[*]The subject receives penalties (Truce breaking, War Exhaustion, Antagonism) even though it had no choice
+[*]The Overlord (Yuán) is also dragged into the War (Issue 7), compounding the problem
+[/list]
+
+[b]Why This Is Problematic:[/b]
+[list]
+[*][b]No logical connection:[/b] A small subject in Mongolia has no reason to support a Rebellion in Georgia
+[*][b]No player control:[/b] Player cannot prevent their subject from being called
+[*][b]Hidden cause:[/b] Player must investigate to find out why their subject is at War
+[*][b]Penalties without choice:[/b] Subject receives severe penalties for actions it did not choose
+[*][b]Overlord dragged in:[/b] Overlord is also forced to join (Issue 7), creating a cascade of forced participation
+[*][b]Exploitable:[/b] Defenders can use this to force small subjects and their Overlords into Wars
+[/list]
+
+[b]Technical Details:[/b]
+[list]
+[*]The hardcoded mechanism in [code]on_civil_war_start[/code] does not check [code]is_subject = yes[/code] or subject type
+[*]The system only checks cultural dominance, ignoring subject status, distance, and size
+[*]Subjects are treated the same as independent Countries for the purpose of being called
+[/list]
+
+[b]Impact:[/b]
+[list]
+[*]Small subjects get dragged into distant Wars they have no interest in
+[*]Players lose control over their subjects' foreign policy
+[*]Creates confusion and frustration (player must investigate why subject is at War)
+[*]Enables exploits where Defenders can force small subjects and Overlords into Wars
+[/list]
+

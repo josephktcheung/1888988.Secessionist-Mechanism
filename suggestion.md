@@ -1,0 +1,425 @@
+# Secessionist Mechanism Improvement Suggestions
+
+**CORE ASSUMPTION:** Secessionist rebels are nationalist rebels who want to separate from their controller. **If a primary culture country exists and acquires Intervention Right:** The rebels join that country as a Secessionist subject upon victory, and that country becomes the war leader. **If no primary culture country exists or acquires Intervention Right:** The rebels become an independent nation and lead the war themselves, winning independence with support from rival countries. **Historical Example:** Greek War of Independence (1821) - $BYZ$ was destroyed in 1453, so no Greek primary culture country existed. Greek rebels became independent and won the war with support from $RUS$, Britain, and $FRA$ (rivals of $TUR$). See CASE STUDY 1D for details.
+
+## EXISTING PRECEDENTS: PROVEN MECHANICS IN EU5
+
+EU5 already has several proven mechanics that can be adapted for Secessionist rebellions:
+
+1. **Rise of the Ottomans Press_Claims Mechanic**: Allows countries to acquire $game_concept_casus_belli$ using ducats within a $game_concept_situation$ framework. The `press_claims` action (type = situation) demonstrates that $game_concept_situation$ framework can handle ducat-based acquisitions, countries can evaluate and choose whether to acquire (no forced participation), and costs can scale with economic factors (scaled_gold).
+
+2. **Fall of Delhi $game_concept_situation$**: Demonstrates priority-based visibility (tag, neighbors, subjects, enemies/rivals, region), strict filtering with `every_country` limits, global variable lists for tracking participants, and staggered event notifications.
+
+3. **Italian Wars $game_concept_situation$**: Shows complex priority calculation using `ordered_country` with custom scoring (military strength, rank, income), multi-tier notifications, and strategic interest evaluation. **CRITICAL:** Uses `is_subject = no` in limit clauses to exclude subjects from ranking (lines 139, 185, 254, 299, 352, 404), establishing the precedent for subject disqualification in ranking systems.
+
+4. **Intervene in Subject Civil War**: Demonstrates how countries can join existing civil wars using `join_war_as_attacker` or `join_war_as_defender` with `reason = intervene`. This is the exact mechanic needed for joining Secessionist rebellions.
+
+5. **Red Turban Rebellions $game_concept_situation$**: Shows distance/relationship-based filtering, `every_country` with strict limits, and $game_concept_situation$ actions that grant the ability to join wars (`rtr_join_chinese_defense` uses `join_war_as_attacker`/`join_war_as_defender`).
+
+6. **Coalition Mechanics**: Coalitions (`game/in_game/common/international_organizations/coalition.txt`) have `has_leader_country = yes` and `leader_type = country`. Coalition leaders are automatically selected by highest `great_power_score` among coalition members (no explicit `leader_change_method` defined, so the game defaults to selecting the strongest member). Coalition members can join wars through `join_defensive_wars_always` and `join_offensive_wars_always` when the coalition target is involved. This allows coalition leaders to coordinate coalition intervention while preventing cascading escalation (only the coalition leader can trigger coalition participation). The Intervention Right System integrates with these existing coalition mechanics, allowing coalition leaders to acquire Intervention Rights and coordinate coalition members against aggressive powers.
+
+The Intervention Right System proposal builds directly on these proven foundations, adapting them for Secessionist rebellions with additional features like mercenary support, priority-based notification system, and integration with coalition mechanics.
+
+## PROBLEM SUMMARY
+
+The current Secessionist mechanism has several critical issues:
+
+1. Forced war participation with no refusal option
+2. **Original owners completely ignored** - the system only looks at cultural dominance, ignoring historical ownership. Example: $TUR$ (original owner of rebelling territories) are completely ignored in favor of $ERE$ (culturally dominant but not original owner) in $BYZ$ case. Original owners have no opportunity to reclaim their former territories.
+3. $game_concept_truce$ breaking penalties when forced into war
+4. $game_concept_personal_union$ breaking when forced into war (verified: $FRA$-$SIC$ $game_concept_personal_union$ breaks when Sicilian rebels appear)
+5. Absurd distance support requests (e.g., $YUA$ supporting Eastern European rebels 6000+ km away)
+6. Overlord forced participation without control
+7. Slow intervention authorization creation makes timely intervention impossible ($BYZ$ needs 65 months at 0.31/month to build 20 spy network strength against $TUR$ to support rebels, but by then the rebellion may have already been crushed)
+8. Support rebels action is rarely used (requires 97 months at 0.31/month for $BYZ$)
+9. Rebels are militarily weak (only levies, no regulars) and cannot survive long enough for supporting countries to send troops
+10. Risk of world wars - multiple countries can join, escalating conflicts unnecessarily
+11. **World war escalation through asymmetric $game_concept_alliance$ calling** - A single local rebellion can escalate into a world war. Defender can call all allies, while forcibly called attacker cannot call its own allies, creating dangerous escalation mechanism where defenders can systematically use Secessionist rebellions to attack their enemies' $game_concept_alliance$ blocs asymmetrically (see CASE STUDY 1C: Polish Rebellion Escalation)
+
+## CASE STUDY 1: The Posad Rebellion - Forced Participation Problem
+
+**The Scenario:** $YUA$ (Chinese Empire) in 1337. Posad (near Black Sea) originally owned by $GLH_horde$ (Mongolian country bordering $MOS$). $MOS$ conquered Posad. 1,669 Mongols begin secessionist rebellion. Rebellion seeks support from $YUA$ (6000+ km away), ignoring logical choice of $GLH_horde$ (original owner, neighbor).
+
+**The Current Game Behavior:** Game identifies $YUA$ as dominant Mongolian culture country. $YUA$ is **FORCED** to join on day 1, fighting a war 6000+ km away with **NO CHOICE**. Messenger from Posad to Khanbaliq (Beijing) would take 9-18 months one way (3-4 years round trip), making day 1 participation physically impossible.
+
+**The Logical Problem:** Mongolian rebels should **FIRST** consider original owner ($GLH_horde$). Current system **completely ignores original ownership** - only looks at cultural dominance, ignoring historical claims and logical priority.
+
+**How New System Fixes This:** Ranking formula gives **original owner bonus: 100 points** (highest priority). $GLH_horde$ (original owner + neighbor) ranks highest; $YUA$ (6000+ km away) ranks lower. **This restores logical priority: Original Owner > Neighbors > Culturally Dominant**. Also fixes slow $game_concept_casus_belli$ creation (65 months → immediate acquisition at 80-90%) and rebel military weakness (ducats fund mercenaries before revolution).
+
+## SOLUTION APPROACH 1: SIMPLIFIED REFUSAL AND PRE-EVALUATION
+
+1. Simple refusal mechanism: Popup when forced into civil war, options Support/Refuse, no penalties if refused
+2. Exempt forced participation from penalties: Add `forced_civil_war_participant` flag, check before applying $game_concept_truce$ breaking penalties and $game_concept_personal_union$ breaking
+3. Pre-evaluation system: Distance check (>2000 = no call), land desire check, military access feasibility, priority: Original Owner > Neighbors > Culturally Dominant
+4. Overlord war leader control: Make overlord war leader when dragged into subject's civil war
+5. Military access exception: Allow war leaders to request military access from allies during defensive wars
+
+## SOLUTION APPROACH 1B: INTERIM SOLUTION USING EXISTING JOIN WAR MECHANICS
+
+**INTERIM APPROACH:** This solution can be implemented quickly before the full Intervention Right System, using existing `can_join_offensive_war_with` and `can_join_defensive_war_with` triggers (similar to Red Turban Rebellions `rtr_join_chinese_defense` action). This provides immediate fixes while the comprehensive system is developed.
+
+**CORE CONCEPT:**
+
+Instead of forced participation, the system checks if countries CAN join the civil war using existing triggers, then gives them an optional event to join (similar to how Red Turban Rebellions work - no forced participation, countries can choose to join or refuse).
+
+**KEY FEATURES:**
+
+1. **Original Owner Priority:** When Secessionist rebellion breaks out, system first checks original owners (using `previous_owner`) before checking culturally dominant countries. This fixes the $BYZ$ case where $TUR$ (original owner) should be prioritized over $ERE$ (culturally dominant but not original owner).
+
+2. **Optional Participation:** Countries receive an event notification when civil war starts, with options to "Join War" or "Refuse". No forced participation - countries can refuse without penalties (like Red Turban Rebellions).
+
+3. **Eligibility Checks:** Uses existing `can_join_offensive_war_with` and `can_join_defensive_war_with` triggers to check if countries can actually join the war (distance, diplomatic relations, truces, etc.). Only eligible countries receive notifications.
+
+4. **Priority System:** Notification priority: Original Owner (same culture) > Neighbors (same culture) > Culturally Dominant (same culture) > Rivals. This ensures logical priority while using existing game mechanics.
+
+5. **No Resource Cost:** Like Red Turban Rebellions, joining has no ducat cost. This is simpler than the full Intervention Right System but still fixes the core problems.
+
+6. **Overlord Options:** Overlords receive special notification and can choose to join or refuse (addressing Exploit 1). If suspicion score is high, overlord can instantly cancel $vassal$ status using existing `cancel_subject` mechanic.
+
+**HOW IT WORKS:**
+
+1. When Secessionist rebels reach 100% and civil war starts (existing EU5 behavior)
+
+2. System checks eligible countries in priority order:
+- TIER 1: Original owners with same culture (using `previous_owner` check)
+- TIER 2: Neighbors with same culture
+- TIER 3: Culturally dominant country (if not already selected)
+- TIER 4: Rivals of defender
+
+- For each eligible country, system checks:
+- `can_join_offensive_war_with = rebel_country` (can they join on attacker side?)
+- `NOT = { is_at_war_with = defender }` (not already at war)
+- `NOT = { has_truce_with = defender }` (no truce)
+- `distance_to_capital <= 5000` (reasonable distance)
+- Other standard checks (not bankrupt, not in civil war, etc.)
+
+- Eligible countries receive event notification: "Secessionist rebellion has broken out in [DEFENDER]. Do you want to join the war on the rebel side?"
+
+- Options:
+- "Join War" - Country joins the civil war on attacker side using `join_war_as_attacker` with `reason = intervene` (like `intervene_in_subject_civil_war`)
+- "Refuse" - Country refuses, no penalties, no participation
+
+- Overlords receive special notification with additional options:
+- "Join War" - Join defensive war
+- "Refuse - Let $vassal$ Fight Alone" - Refuse to join, $vassal$ fights alone
+- "Cancel $vassal$ Status" - If suspicion score high, instantly cancel $vassal$ status using `cancel_subject`
+
+**BENEFITS:**
+
+- Quick to implement - uses existing triggers and mechanics (no new $game_concept_situation$ framework needed)
+- Fixes forced participation problem - countries can refuse
+- Fixes original owner priority - $TUR$ prioritized over $ERE$ in $BYZ$ case
+- Uses proven mechanics - `can_join_offensive_war_with` already balanced and tested
+- No resource cost - simpler than full system, but still effective
+- Addresses Exploit 1 - overlords can refuse or cancel $vassal$ status
+- Prevents world wars - eligibility checks naturally limit participation
+
+**LIMITATIONS (Compared to Full Intervention Right System):**
+
+- No early warning (80-90%) - countries only notified when rebellion breaks out
+- No mercenary funding - rebels don't receive ducats for mercenaries
+- No pre-acquisition system - countries can't prepare intervention rights in advance
+- Less strategic depth - no ducat investment, no support rebels synergy
+
+**RECOMMENDED USE:**
+
+This interim solution can be implemented as Phase 0.5 or Phase 1.5 - after immediate hotfixes but before the full Intervention Right System. It provides immediate relief from forced participation while the comprehensive system is developed.
+
+## SOLUTION APPROACH 2: INTERVENTION RIGHT SYSTEM WITH RESTRICTED ELIGIBILITY
+
+**CORE CONCEPT:**
+
+**IMPORTANT TERMINOLOGY CLARIFICATION**: This system does **not** grant a traditional $game_concept_casus_belli$ (CB) for declaring war. Instead, it grants an "Intervention Right" that allows countries to join an existing civil war when Secessionist rebels break out. When Secessionist rebels reach 100% progress, they automatically start a civil war against the defender. Countries that have acquired the Intervention Right can then join this existing civil war on the rebel side, similar to how countries can join ongoing wars in EU5 (using `join_war_as_attacker` like `intervene_in_subject_civil_war`).
+
+When Secessionist rebels progress monthly, it simulates time investment, diplomat resource, and monthly expenses needed to build spy networks and establish connections with rebels. When rebels reach 80-90%, eligible countries are notified that an Intervention Right is available. Countries can acquire this right by spending ducats (monetary support sent to rebels). These ducats allow rebels to hire mercenaries before the revolution begins, giving them military strength to survive the initial government crackdown and hold out until supporting countries can send troops.
+
+When the rebellion breaks out (rebels reach 100%), it creates a civil war. Countries that acquired the Intervention Right can then join this existing civil war by sending 1 diplomat, using `join_war_as_attacker` with `reason = intervene` (like `intervene_in_subject_civil_war`). This is different from declaring a new war - it's joining an existing conflict on the rebel side.
+
+This system builds directly on proven precedents:
+- **Rise of the Ottomans press_claims**: Ducat-based acquisitions in $game_concept_situation$ framework
+- **Fall of Delhi**: Priority-based visibility and strict filtering
+- **Italian Wars**: Complex priority calculation using `ordered_country` with custom scoring
+- **Intervene in Subject Civil War**: Joining existing civil wars using `join_war_as_attacker`
+- **Red Turban Rebellions**: $game_concept_situation$ actions that grant ability to join wars
+
+## ELIGIBILITY RESTRICTIONS (PREVENTING WORLD WARS)
+
+**CRITICAL RESTRICTION**: To prevent intervention right acquisitions from escalating into world wars, the system restricts eligibility to two logical categories:
+
+**CATEGORY 1: Top-Ranked Same Primary Culture Country (Priority Offer System)**
+- Countries with the same primary culture as the rebelling population
+- **SUBJECT DISQUALIFICATION:** Subjects (vassals, secessionist subjects, fiefdoms, personal union junior partners, etc.) are **DISQUALIFIED** from Category 1 ranking. This prevents small secessionist subjects in distant regions (e.g., a Mongolian culture secessionist subject in Mongolia region) from being incorrectly prioritized for rebellions far away (e.g., in Georgia). It also prevents subjects from acquiring Intervention Rights that would cause them to join wars against their overlords, which would break their subject relationships (e.g., France-Sicily Personal Union breaking when Sicilian rebels appear in French-controlled territory). Only independent countries with the same primary culture are eligible for Category 1 ranking.
+- **CRITICAL RESTRICTION - PRIORITY SYSTEM:** Only the top-ranked same-culture country receives the opportunity initially (similar to "right of first refusal"). If they refuse or don't acquire within a time limit (e.g., 30 days), the next-ranked same-culture country becomes eligible. This creates a priority-based sequential system that prevents multiple same-culture countries from all acquiring simultaneously while ensuring the best candidate gets first opportunity.
+- Ranking formula: `(original_owner_bonus * 100) + (neighbor_bonus * 50) + (cultural_influence * 10) + (country_rank_level * 5) - (distance_to_capital / 10)`
+- Example 1: For Mongolian rebels in Posad, $GLH_horde$ (original owner + neighbor, score: `100+50+... = high`) would rank higher than $YUA$ (far away, high cultural influence but distance penalty, score: `0+0+563*10-6000/10 = lower`). $GLH_horde$ gets first opportunity. If $GLH_horde$ refuses, $YUA$ becomes eligible.
+- Example 2: **CRITICAL:** For Turkish rebels in former $TUR$ territories ($BYZ$ case), $TUR$ (original owner, score: `100+... = high`) would rank higher than $ERE$ (not original owner, score: `0+cultural_influence*10+... = lower`). $TUR$ gets first opportunity. If $TUR$ refuses, $ERE$ becomes eligible. This fixes the current system's flaw where $TUR$ are completely ignored in favor of culturally dominant $ERE$.
+- Example 3: **SUBJECT DISQUALIFICATION:** For Sicilian rebels in $FRA$-controlled territory, $SIC$ (culturally dominant but a Personal Union junior partner of $FRA$) is **DISQUALIFIED** from Category 1 ranking. Only independent Sicilian-culture countries (if any exist) are eligible. This prevents the Personal Union from breaking when $SIC$ would otherwise be forced to join a war against its senior partner $FRA$. Similarly, small secessionist subjects (e.g., a Mongolian culture secessionist subject in Mongolia region) are disqualified from being prioritized for distant rebellions (e.g., in Georgia), preventing incorrect long-distance interventions.
+- **PRECEDENT:** This follows established EU5 patterns. The Italian Wars situation (`italian_wars.txt`) uses `ordered_country` with `is_subject = no` in the limit clause to exclude subjects from ranking (lines 139, 185, 254, 299, 352, 404). Similarly, Rise of the Ottomans (`rise_of_the_ottomans.txt`) excludes subjects from ranking using `limit = { is_subject = no }` (line 48). Golden Age of Piracy (`golden_age_of_piracy.txt`) also excludes subjects from pirate country ranking (line 82). War of Religions (`war_of_religions.txt`) excludes subjects from HRE member checks (lines 20, 24). This pattern is consistent across multiple situations.
+- Implementation: Use `ordered_country` with `order_by` scoring to rank all same-culture countries, **excluding subjects** (check: `is_subject = no` in the limit clause, following Italian Wars precedent). Only top-ranked independent country receives notification initially. If they refuse or time expires, next-ranked independent country receives notification.
+- Priority mechanism: System tracks which same-culture countries have been offered the opportunity. If top-ranked refuses or doesn't respond within time limit, system extends opportunity to next-ranked country. This continues sequentially until someone acquires or all eligible countries refuse.
+- This ensures only **ONE** same-culture country can acquire at a time, preventing cultural blocs from all joining, while giving priority to the most logical candidate (original owner, then neighbors, then culturally dominant)
+- **TRUCE EXCEPTION FOR PRIMARY CULTURE COUNTRIES:** Primary culture countries can acquire Intervention Right even if they have a truce with the defender. However, to prevent gaming the system, **one of the following cost/penalty mechanisms should be implemented:**
+- **Option A - Higher Cost (Recommended):** Primary culture countries with a truce pay a higher cost (e.g., 2.0x multiplier instead of base cost). This represents the additional diplomatic and economic costs of breaking a truce to support rebels. The higher cost prevents players from gaming the system by repeatedly breaking truces, while still allowing strategic intervention when the value justifies the cost.
+- **Option B - Reduced $game_concept_truce$-Breaking Penalties:** Primary culture countries with a $game_concept_truce$ still receive $game_concept_truce$-breaking penalties when joining the war, but at reduced severity (e.g., -25 $game_concept_stability$ instead of -50, +0.5 $game_concept_war_exhaustion$ instead of +1, +12 $game_concept_antagonism$ instead of +25). This acknowledges that supporting one's own culture's independence is a form of asymmetric warfare that doesn't fully violate the spirit of a truce, while still imposing consequences for breaking it.
+- **Option C - Combined Approach:** Both higher cost (1.5x multiplier) AND reduced truce-breaking penalties (50% severity). This provides the strongest protection against gaming while still allowing strategic intervention.
+- Rationale for allowing truce purchase:
+- Supporting one's own culture's independence struggle is a form of asymmetric warfare that doesn't fully violate the spirit of a truce
+- The truce was likely forced on them (they lost the war), and supporting rebels is a legitimate continuation of resistance
+- If the country used "Support Rebels" action before/during the truce period, purchasing Intervention Right is a continuation of that support
+- This is a conscious strategic decision (unlike forced participation), allowing countries to choose whether to break the truce to support their culture's independence, but with appropriate costs/penalties
+- Prevents defenders from exploiting Secessionist rebellions to force truce-breaking on defeated enemies who have no choice
+- Example: $POL$ has a $game_concept_truce$ with $RUS$ (from a previous war where $RUS$ conquered Polish territories). When Polish Secessionist rebellion occurs in $RUS$-controlled territory, $POL$ can acquire Intervention Right to support the rebellion, but must pay a higher cost (Option A) or accept reduced $game_concept_truce$-breaking penalties (Option B). This represents $POL$ making a strategic choice to break the $game_concept_truce$ to reclaim Polish territories, accepting the economic or diplomatic costs, rather than being forced to do so without consequences.
+
+**CATEGORY 2: Rivals of the Defender (All Eligible)**
+- Countries that are rivals of the defending country
+- These countries have strategic interest in weakening the defender
+- Example: If $TUR$ are defending against Greek rebels, $TUR$ rivals (e.g., $HAB$, $RUS$, $VEN$) can acquire intervention rights
+- Strict check: `is_rival_of = defender`
+- Rationale: Rivals have genuine strategic interest in supporting rebellions against their enemies
+- Higher cost: 1.5x multiplier (as they lack cultural ties)
+
+**CATEGORY 3: Coalition Leader Against Defender**
+- Countries that are leaders of a coalition targeting the defending country
+- **CRITICAL RESTRICTION - COALITION LEADER ONLY:** Only the coalition leader can purchase Intervention Right on behalf of the coalition. This prevents every coalition member from purchasing separately, which would create uncontrolled escalation. The coalition leader represents the coalition's collective strategic interest.
+- Strict check: `is_leader_of_international_organization` where the organization is a coalition AND `is_target_of_international_organization_of_type = { type = coalition target = defender }` (defender is the coalition target). Note: Coalition leaders are automatically selected by highest `great_power_score` among coalition members, so typically the strongest coalition member becomes the leader.
+- Rationale: $game_concept_coalition$ are formed against aggressive expansion ($game_concept_antagonism$ > 50). When a Secessionist rebellion occurs in the $game_concept_coalition$ target's territory, $game_concept_coalition$ members have strategic interest in supporting the rebellion to weaken the aggressive power. However, only the $game_concept_coalition$ leader can coordinate this support to prevent cascading escalation.
+- Higher purchase cost: 1.5x multiplier (same as rivals, as they lack cultural ties but have strategic interest)
+- Coalition members can join through coalition mechanism: When coalition leader purchases Intervention Right and joins the war, coalition members can be called in through existing coalition mechanics (`join_defensive_wars_always` and `join_offensive_wars_always` in `coalition.txt`). However, only the coalition leader (who purchased Intervention Right) can call coalition members - individual coalition members cannot call their own allies, preventing cascading escalation.
+- Example: If $RUS$ has a $game_concept_coalition$ against it (formed due to aggressive expansion), and Polish Secessionist rebellion occurs in $RUS$ territory, the $game_concept_coalition$ leader (e.g., $HAB$ - automatically selected as the strongest $game_concept_coalition$ member by highest `great_power_score`) can purchase Intervention Right. When $HAB$ joins the war, $game_concept_coalition$ members (e.g., $SWE$) can be called in through $game_concept_coalition$ mechanics, but only $HAB$ ($game_concept_coalition$ leader) can call them - $SWE$ cannot call its own allies. Note: $PRU$ is $RUS$'s ally, not in the $game_concept_coalition$.
+
+**WHY THESE RESTRICTIONS PREVENT WORLD WARS:**
+- Limits participation to countries with genuine interest (cultural ties OR strategic rivalry OR coalition membership)
+- Only **ONE** same-culture country can join (top-ranked by formula), preventing cultural blocs
+- Rivals are naturally limited (countries typically have 2-3 rivals)
+- Coalition participation is controlled: Only coalition leader (automatically selected by highest `great_power_score` among coalition members) can acquire Intervention Right, and only coalition leader can call coalition members, preventing every coalition member from calling all their allies
+- Prevents random countries from joining just because they can
+- Keeps conflicts localized and historically plausible
+- Still allows historical scenarios: Top-ranked same-culture country supports their kin, rivals exploit opportunities to weaken enemies, coalitions coordinate against aggressive powers
+- Coalition integration: Uses existing coalition mechanics (`join_defensive_wars_always` and `join_offensive_wars_always`) but restricts who can trigger coalition participation (only coalition leader who acquired Intervention Right). Coalition leaders are automatically selected by highest `great_power_score` among coalition members (as defined in `coalition.txt` with `has_leader_country = yes` and `leader_type = country`), ensuring the strongest coalition member coordinates intervention, preventing cascading escalation
+
+## HOW IT SOLVES THE PROBLEMS
+
+**Mongolian Case Study:**
+- $GLH_horde$ (original owner, neighbor) ranks highest by formula: `(100 original owner + 50 neighbor + ...) = highest score`
+- $YUA$ (6000+ km away) ranks lower: `(0 original owner + 0 neighbor + 563*10 cultural influence - 6000/10 distance = negative)`
+- $GLH_horde$ is top-ranked same-culture country and receives notification immediately when rebels reach 80%
+- $GLH_horde$ can evaluate and acquire Intervention Right (or refuse, no penalties)
+- If $GLH_horde$ acquires: Player pays ducats, rebels hire mercenaries (14+ days gathering), player receives Intervention Right. $YUA$ never receives notification (priority system stops at $GLH_horde$).
+- If $GLH_horde$ refuses or doesn't respond within 30 days: $YUA$ (next-ranked) becomes eligible and receives the opportunity. $YUA$ can then acquire or refuse.
+- When rebellion breaks out (rebels reach 100%), a civil war starts automatically. **If $GLH_horde$ acquired Intervention Right:** The rebel country automatically joins $GLH_horde$ as a Secessionist subject, and $GLH_horde$ becomes the attacker war leader (not the rebel country/vassal). This prevents vassal gaming where vassals take all benefits before their overlord. $GLH_horde$ can then call its allies and control peace negotiations.
+- **If no primary culture country acquired Intervention Right:** The rebel country becomes independent and leads the war. Rivals who acquired Intervention Right can still join, but the rebel country remains independent. **Historical Example:** Greek War of Independence (1821) - $BYZ$ was destroyed in 1453, so no Greek primary culture country existed. Greek rebels became independent and won the war with support from $RUS$, Britain, and $FRA$ (rivals of $TUR$). See CASE STUDY 1D for details.
+- Country that acquired Intervention Right can then join this existing civil war on the rebel side using `join_war_as_attacker` (like `intervene_in_subject_civil_war`)
+- This priority system ensures only one same-culture country can acquire at a time, preventing multiple countries from all joining simultaneously, while giving priority to the most logical candidate
+
+**$BYZ$-$TUR$ Case Study (Original Owner Priority Restored):**
+
+**Current System Flaw:** $TUR$ (original owner of rebelling territories) are **COMPLETELY IGNORED** because they are not the culturally dominant Turkish country. $ERE$ (culturally dominant) is forced to join instead, even though $ERE$ may have no historical connection to these specific territories.
+
+**New System Fix:**
+- $TUR$ (original owner) ranks highest by formula: `(100 original owner + ...) = highest score`
+- $ERE$ (not original owner) ranks lower: `(0 original owner + cultural influence * 10 + ...) = lower score`
+- $TUR$ is top-ranked same-culture country and receives notification immediately when rebels reach 80%
+- $TUR$ can evaluate and acquire Intervention Right to reclaim their former territories (or refuse, no penalties)
+- If $TUR$ purchases: Player pays ducats, rebels hire mercenaries, player receives Intervention Right to reclaim former $TUR$ territories. $ERE$ never receives notification (priority offer system stops at $TUR$).
+- If $TUR$ refuses or doesn't respond within 30 days: $ERE$ (next-ranked) becomes eligible and receives the purchase offer. $ERE$ can then purchase or refuse.
+- When rebellion breaks out (rebels reach 100%), a civil war starts automatically. **If $TUR$ purchased Intervention Right:** The rebel country automatically joins $TUR$ as a Secessionist subject, and $TUR$ becomes the attacker war leader (not the rebel country/$vassal$). This prevents $vassal$ gaming and ensures $TUR$ controls peace negotiations to reclaim former $TUR$ territories. $TUR$ can then call its allies and control the war.
+- **If no primary culture country purchased Intervention Right:** The rebel country becomes independent and leads the war. Rivals who purchased Intervention Right can still join, but the rebel country remains independent. **Historical Example:** Greek War of Independence (1821) - $BYZ$ was destroyed in 1453, so no Greek primary culture country existed. Greek rebels became independent and won the war with support from $RUS$, Britain, and $FRA$ (rivals of $TUR$). See CASE STUDY 1D: Greek War of Independence for detailed analysis.
+- Country that purchased Intervention Right can then join this existing civil war on the rebel side using `join_war_as_attacker` to reclaim territories
+- This priority offer system ensures original owners get first opportunity, solving the original owner being ignored problem
+- **This restores logical priority: Original Owner ($TUR$) > Culturally Dominant ($ERE$), with sequential offers ensuring only one can purchase at a time**
+
+**World War Escalation Problem - How New System Fixes It:**
+- **Current System Flaw:** Creates asymmetric alliance calling worse than historical WW1/WW2. Defender can call all allies, but forcibly called attacker cannot call its own allies, creating one-sided escalation.
+- **Historical Precedent:** WW1 (Sarajevo assassination) and WW2 (Danzig crisis) show how regional conflicts escalate through alliance systems. However, in both cases, both sides could coordinate with allies before committing - countries had agency in their decisions.
+- **New System Fix:** Priority System makes participation optional. Countries can evaluate and coordinate with allies before acquiring Intervention Right. If top-ranked country refuses, no escalation occurs. If they acquire, both sides can coordinate with allies (like historical world wars), creating balanced escalation rather than asymmetric one-sided war.
+- **Eligibility Restrictions:** Only top-ranked same-culture country (via Priority System) OR rivals of defender can acquire, preventing random countries from joining and limiting escalation to those with genuine interest.
+- **Prevents Forced Escalation:** Countries can refuse to purchase, preventing automatic world war escalation. This matches historical reality where not all regional incidents escalate (e.g., Balkan Wars 1912-1913 did not escalate into WW1 until Sarajevo).
+- **Balanced Escalation:** If escalation occurs, both sides can coordinate with allies before committing, matching historical world wars where countries had agency in their decisions.
+
+## CASE STUDY 1C: The Polish Rebellion Escalation - World War Scenario
+
+**Historical Precedent: How Regional Conflicts Escalate into World Wars**
+
+History demonstrates that regional conflicts can escalate into world wars through alliance systems. Two prime examples:
+
+1. **World War I (1914):** The assassination of Archduke Franz Ferdinand in Sarajevo (June 28, 1914) was a regional incident in the Balkans. Austria-Hungary's ultimatum to Serbia escalated through alliance systems: Russia mobilized to support Serbia, Germany supported Austria-Hungary, France supported Russia, and Britain entered to support France. A single regional incident escalated into a global war involving all major powers.
+
+2. **World War II (1939):** Germany's invasion of Poland (September 1, 1939) was triggered by the Danzig crisis - a regional dispute over a single city. However, Britain and France had guaranteed Polish independence. When Germany invaded, Britain and France declared war, pulling in their allies. A regional conflict over one city escalated into a world war.
+
+**The EU5 Scenario (Late 18th Century - Partition Era):**
+
+Within EU5's timeframe, a similar escalation scenario can occur:
+
+- Two major alliance blocs have formed (similar to WW1/WW2 style):
+- **$game_concept_alliance$ Bloc A (Defender's Side):** $RUS$ (defender), $PRU$
+- **$game_concept_alliance$ Bloc B (Potential Attacker's Side):** $FRA$, $TUR$, $SWE$
+- $RUS$ has conquered Polish territories from the Polish-Lithuanian Commonwealth in a previous war
+- $POL$ has a $game_concept_truce$ with $RUS$ (from the previous war where $RUS$ conquered Polish territories)
+- $POL$ still exists (culturally dominant Polish country) but is NOT allied with $FRA$, $TUR$, or $SWE$, and is NOT in the $game_concept_coalition$ against $RUS$
+- $RUS$ has grown too aggressively, forming a $game_concept_coalition$ against it ($game_concept_coalition$ members: $HAB$ (leader), $SWE$, etc.). $POL$ is NOT in this $game_concept_coalition$ - it has a $game_concept_truce$ with $RUS$ and is not part of the $game_concept_coalition$.
+- A small Polish Secessionist rebellion occurs in a single region (e.g., Podolia or Volhynia) - similar to how Danzig or Sarajevo were regional flashpoints
+- The rebellion involves only a few thousand Polish rebels in one province
+- France has **GUARANTEED** Poland-Lithuania's independence (existing game mechanic: `guarantee` relation with `called_in_defensively = giving`)
+- France is also a RIVAL of Russia (strategic interest in weakening Russia)
+- Austria is the coalition leader against Russia (coalition formed due to Russia's aggressive expansion) - Austria was automatically selected as coalition leader because it has the highest `great_power_score` among coalition members
+
+**The Current Game Behavior - World War Escalation (Like WW1/WW2):**
+1. Polish Secessionist rebellion breaks out in Russian-controlled territory (regional incident, like Sarajevo or Danzig)
+2. $POL$ (culturally dominant Polish country) is **FORCED** to join the rebellion's side (attacker) on day 1 - **NO CHOICE**, just like how countries were pulled into WW1/WW2 through $game_concept_alliance$ obligations. **CRITICAL:** $POL$ has a $game_concept_truce$ with $RUS$, but is still forced to join, triggering $game_concept_truce$ breaking penalties (-50 $game_concept_stability$, +1 $game_concept_war_exhaustion$, +25 $game_concept_antagonism$) even though it had no choice.
+3. **CRITICAL ASYMMETRY (Unlike WW1/WW2 $game_concept_alliance$ Systems):**
+- **$RUS$ (defender) CAN call all its allies:** $RUS$ calls $PRU$ to join the defensive war (like how Germany called Austria-Hungary in WW1, or how Britain called France in WW2). $RUS$ and $PRU$ now fight against $POL$.
+- **$POL$ (forcibly called attacker) CANNOT call its allies:** $POL$ is the attacker, so even if it had allies, it cannot call them to join (unlike WW1/WW2 where both sides could coordinate with allies). $POL$ fights alone against three major powers.
+- Result: A local rebellion involving a few thousand rebels escalates into a major war:
+- $RUS$ + $PRU$ (2 major powers) vs $POL$ (1 country, alone)
+- $POL$ has no choice - it was forced into the war and cannot call its own allies
+- The war becomes massively one-sided, with Poland-Lithuania facing overwhelming odds
+- This is **WORSE** than historical WW1/WW2, where both sides could coordinate with allies - the current system creates an even more asymmetric escalation
+- Historical comparison: In WW1/WW2, both sides could coordinate with allies before committing. The current EU5 system prevents forcibly called attackers from coordinating, creating asymmetric escalation worse than historical world wars.
+
+**The New System Behavior - Comprehensive Scenario Combining All Mechanics:**
+1. Polish Secessionist rebellion reaches 80-90% progress (early alert system)
+2. Priority System: $POL$ (top-ranked same-culture country) receives opportunity first. $POL$ has a $game_concept_truce$ with $RUS$ but can still acquire (must pay higher cost 2.0x or accept reduced penalties 50% severity).
+3. **Scenario A - $POL$ Acquires:** Acquires Intervention Right. When rebellion breaks out, rebel country joins $POL$ as Secessionist subject, $POL$ becomes attacker war leader. **Note:** $FRA$ has guaranteed $POL$, but guarantee mechanism (`called_in_defensively = giving`) only triggers when the guaranteed country is attacked (defender), not when it attacks (attacker). Since $POL$ is the attacker, $FRA$'s guarantee does not trigger. If $FRA$ wants to join the war, it must purchase Intervention Right (Category 2 - rival) to join as attacker war participant, costing ducats (1.5x multiplier) instead of just 1 diplomat. However, if $FRA$ purchases Intervention Right, it joins as attacker war participant (not war leader), so it cannot call allies. $RUS$ (defender war leader) calls $PRU$. $POL$ (attacker war leader) can call its own allies (if any). Result: If $FRA$ purchases Intervention Right, balanced escalation ($RUS$+$PRU$ vs $POL$+$FRA$+rebels+$POL$'s allies). Only $POL$ and $RUS$ can call allies (prevents cascading). If $FRA$ does not purchase, simpler escalation ($RUS$+$PRU$ vs $POL$+rebels+$POL$'s allies). **Key insight:** Guarantee mechanism is cheaper (1 diplomat) but only works defensively. Intervention Right is more expensive (ducats) but allows joining as attacker, though without ability to call allies unless you become war leader.
+4. **Scenario B - $POL$ Refuses, $FRA$ Acquires:** $FRA$ (rival) acquires. When rebellion breaks out, rebel country becomes independent (no primary culture country acquired). $FRA$ joins but rebel country leads war. $RUS$ calls $PRU$. Result: Controlled escalation ($RUS$+$PRU$ vs $FRA$+independent rebels). Demonstrates independent nation formation (like Greek War of Independence 1821 - no Greek primary culture country existed, rebels became independent).
+5. **Scenario C - Both Refuse, $game_concept_coalition$ Leader Acquires:** $HAB$ ($game_concept_coalition$ leader against $RUS$) acquires. $game_concept_coalition$ members ($SWE$) join through $game_concept_coalition$ mechanics. Rebel country becomes independent. $RUS$ calls $PRU$. Result: $game_concept_coalition$ coordination ($RUS$+$PRU$ vs $HAB$+$SWE$+independent rebels). Only $game_concept_coalition$ leader can call $game_concept_coalition$ members (prevents cascading).
+6. **Scenario D - $POL$ and $FRA$ Both Acquire:** $POL$ (Category 1 - same-culture) acquires first through Priority Offer System. $FRA$ (Category 2 - rival) also acquires (different category, no restriction). When rebellion breaks out, rebel country joins $POL$ as Secessionist subject, $POL$ becomes attacker war leader. $FRA$ joins as attacker war participant using its purchased Intervention Right. $RUS$ (defender war leader) calls $PRU$. $POL$ (attacker war leader) can call its own allies (if any). Result: Multiple intervention rights ($RUS$+$PRU$ vs $POL$+$FRA$+rebels+$POL$'s allies). Only $POL$ and $RUS$ can call allies (prevents cascading). Demonstrates that different categories (Category 1 same-culture and Category 2 rivals) can purchase simultaneously, but only Category 1 purchaser becomes war leader when rebels join as subject.
+7. **Scenario E - $POL$, $FRA$, and $HAB$ All Acquire:** $POL$ (Category 1 - same-culture) acquires first through Priority Offer System. $FRA$ (Category 2 - rival) also acquires. $HAB$ (Category 3 - $game_concept_coalition$ leader against $RUS$) also acquires (all three categories can purchase simultaneously). When rebellion breaks out, rebel country joins $POL$ as Secessionist subject, $POL$ becomes attacker war leader. $FRA$ joins as attacker war participant using its purchased Intervention Right. $HAB$ joins as attacker war participant using its purchased Intervention Right and can call $game_concept_coalition$ members ($SWE$) through $game_concept_coalition$ mechanics. $RUS$ (defender war leader) calls $PRU$. $POL$ (attacker war leader) can call its own allies (if any). Result: Maximum escalation with all three categories ($RUS$+$PRU$ vs $POL$+$FRA$+$HAB$+$SWE$+rebels+$POL$'s allies). Only $POL$, $HAB$ (for $game_concept_coalition$ members), and $RUS$ can call allies (prevents cascading). Demonstrates that all three categories can purchase simultaneously, but only Category 1 purchaser becomes war leader, and only $game_concept_coalition$ leader can call $game_concept_coalition$ members.
+8. **Scenario F - All Refuse:** No escalation occurs. Local rebellion remains local (historically accurate - not all regional incidents escalate).
+9. Key mechanics demonstrated: Priority system, truce exception, guarantee mechanism, coalition integration, independent nation formation, controlled escalation, vassal gaming prevention (purchaser becomes war leader), multiple intervention rights from different categories, maximum escalation scenario with all three categories.
+
+**How New System Solves These Problems:** Slow $game_concept_casus_belli$ creation (65 months → immediate acquisition at 80-90%), rebel military weakness (ducats fund mercenaries before revolution), support rebels action becomes valuable (speeds up progress + enables timely acquisition). When rebellion breaks out, countries can immediately join using acquired Intervention Right.
+
+## NOTIFICATION SYSTEM
+
+**TIER 1: Top-Ranked Same-Culture Country** - Only top-ranked country receives opportunity initially (right of first refusal). If refused, next-ranked becomes eligible. Sequential system ensures only one same-culture country can acquire at a time. Uses `ordered_country` with ranking formula.
+
+**TIER 2: Rivals of Defender** - All rivals notified at 85-90% (staggered). Higher cost (1.5x multiplier). Strict check: `is_rival_of = defender AND NOT = { culture = rebel_culture }`.
+
+## NOTIFICATION CONTROL MECHANISMS
+
+**Game Setting:** Five options: "All Notifications" (default), "Same Culture Only" (~70-80% reduction), "Rivals Only" (~60-70% reduction), "Original Owner Only" (~85-95% reduction), "Disabled".
+
+**Cooldown System:** Per-country cooldown (6 months), per-rebellion cooldown (5% progress). Check: `NOT = { has_variable = secessionist_notification_cooldown_$rebellion_id$ }`.
+
+**Strict Filtering Checks** (Based on Fall of Delhi and intervene_in_subject_civil_war patterns):
+- **CRITICAL**: Must be top-ranked same-culture OR rival of defender: `OR = { (culture = rebel_culture AND ordered_country by ranking_formula, max = 1) OR is_rival_of = defender }` (prevents world wars)
+- Must not be at war with defender: `NOT = { is_at_war_with = defender }` (like Fall of Delhi check)
+- **Truce Exception for Primary Culture Countries:** Primary culture countries can acquire even with truce. To prevent gaming: **Option A (Recommended):** 2.0x cost multiplier; **Option B:** 50% reduced penalties (-25 stability, +0.5 war exhaustion, +12 antagonism); **Option C:** 1.5x cost + 50% reduced penalties. Rationale: Supporting own culture's independence is asymmetric warfare; truce was likely forced; conscious strategic decision. Check: `OR = { culture = rebel_culture AND = { OR = { is_rival_of = defender is_leader_of_international_organization = { type = coalition target = defender } } NOT = { has_truce_with = defender } } }`. Price: `if = { limit = { culture = rebel_culture has_truce_with = defender } multiply = 2.0 }`
+- Must be able to see situation: `can_see_situation = situation:secessionist_rebellion` (like War of Religions check)
+- Must have diplomatic capacity: `diplomatic_capacity > 0` (prevents overextended countries)
+- Must not be in civil war: `in_civil_war = no` (prevents countries dealing with own problems)
+- Must not be bankrupt: `is_during_bankruptcy = no` (like Italian Wars check)
+- Must have sufficient gold: `gold >= (monthly_income_trade_and_tax * 2)` (like Fall of Delhi plea_neighbors check)
+- Must be able to join war: `can_join_as_attacker = yes` (like intervene_in_subject_civil_war check)
+
+## MECHANISM DESIGN (BUILDING ON PROVEN PRECEDENTS)
+
+1. **Early Alert and Intervention Right Acquisition (Rebels at 80-90%):** $game_concept_situation$ created when rebels reach 80-90%. Eligible countries notified (top-ranked same-culture OR rivals). Cost based on diplomat cost, time cost (20 spy network strength including cultural tradition penalty and counterespionage), distance, rebel size. Countries can refuse (optional, like press_claims). Grants right to JOIN existing civil war, not declare new war.
+
+2. **Mercenary Hiring:** Ducats from acquisitions used by rebels to hire mercenaries before revolution (14+ days gathering). Gives rebels military strength to survive initial crackdown.
+
+3. **Potential Enhancement - Secret Regular Training:** Ducats fund secretly trained regulars. **Balance Solution:** When rebels break out via `start_civil_war`, they form rebel country (`country_type = location`) subject to built-in limits: manpower pool (population/buildings), recruitment capacity (locations with recruitment buildings), training speed (regiments per location), economic constraints. Natural balance prevents overpowered armies.
+
+4. **Rebel Outbreak and Civil War (Rebels at 100%):** Civil war starts automatically. Rebel country gets troops via `raise_levies`. **CRITICAL MECHANIC:** If primary culture country acquired: Rebel country joins as Secessionist subject, that country becomes attacker war leader (prevents vassal gaming). If no primary culture country acquired: Rebel country becomes independent and leads war (like Greek War of Independence 1821). Countries that acquired can join using `join_war_as_attacker` with `reason = intervene`.
+
+5. **Support Rebels Integration:** Speeds up rebel progress. When rebels reach 80-90%, eligible countries can acquire immediately. Makes support rebels valuable.
+
+6. **Defender Counter-Strategies:** Can use convert culture/religion, increase tolerance, accept culture, rebel crackdown. Well-managed defenders less vulnerable. Rebels with mercenaries can match defender's initial strength.
+
+7. **Exploit Prevention:** Prevents Exploit 2 (Double War Attack) by eliminating forced participation. Prevents Exploit 1 (Vassal Using Overlord) - if primary culture country acquired, it becomes war leader (not rebel country/vassal). Early warning system (80-90%) gives time to prepare. Overlord special actions: Cancel vassal status, create disloyal subject $game_concept_casus_belli$, seize territories, refuse to join war (reuses existing mechanics).
+
+## ADDITIONAL FIXES FOR EXPLOIT PREVENTION
+
+**Fix 1: Overlord War Leader Control** - Overlord becomes defensive war leader (not vassal), preventing vassal from exploiting overlord's military while controlling peace terms.
+
+**Fix 2: Overlord Refusal Option** - Remove `join_defensive_wars_always` from `secessionists.txt`. Notify overlord at 80-90%, overlord can choose to join or refuse.
+
+**Fix 3: Vassal Rebellion Detection** - Suspicion score based on patterns (uncored territories, low stability, accelerating progress). Overlord can cancel vassal status, create disloyal subject $game_concept_casus_belli$, seize territories, refuse to join war (reuses existing mechanics).
+
+## IMPLEMENTATION USING EXISTING MECHANICS
+
+**Reusable Components:** From press_claims (action structure, select trigger, cooldown, AI evaluation). From Italian Wars (`ordered_country` with ranking formula). From intervene_in_subject_civil_war (`join_war_as_attacker` with `reason = intervene`). From Fall of Delhi (strict filtering, global variable lists, staggered notifications).
+
+**New Components:** Early alert system (situation at 80-90%), mercenary hiring (allocate ducats), top-ranked selection (`ordered_country` with `max = 1`), eligibility restriction (`OR = { (culture = rebel_culture AND ordered_country by ranking_formula, max = 1) OR is_rival_of = defender }`), game setting (notification frequency), optional secret regular training (respects built-in limits).
+
+**Implementation:** Create situation secessionist_rebellion, create action purchase_secessionist_intervention_right, adapt price calculation (scaled_gold + distance/cultural tradition/counterespionage), add mercenary hiring, implement top-ranked selection, add eligibility restriction, add game setting, integrate with existing rebel system.
+
+## BENEFITS
+
+- Full player control (optional participation, like press_claims)
+- Solves original owner ignored problem (Ottomans prioritized over Eretnids)
+- Solves slow $game_concept_casus_belli$ creation (65 months → immediate acquisition at 80-90%)
+- Solves rebel military weakness (ducats fund mercenaries)
+- Solves notification spam (eligibility restrictions + game settings)
+- Prevents world wars and fixes asymmetric alliance calling (both sides can coordinate, controlled escalation)
+- Prevents vassal gaming (purchaser becomes war leader, not vassal)
+- Accounts for cultural tradition penalties and counterespionage (cost reflects penalties)
+- Uses proven mechanics (`join_war_as_attacker`, `create_subject`, `ordered_country`)
+
+## IMPLEMENTATION ROADMAP
+
+**PHASE 0: IMMEDIATE HOTFIX** (1-2 weeks)
+- Exempt forced participation from truce breaking penalties (add `forced_civil_war_participant` flag)
+- Prevent personal union breaking from forced participation
+- Add basic distance check (distance > 2000 = no automatic call)
+
+**PHASE 1: CRITICAL FIXES** (2-3 months)
+- Add simple refusal option (popup with Support/Refuse)
+- Overlord war leader control (make overlord war leader when dragged into subject's civil war)
+- Simple pre-evaluation system (priority: Original Owner > Neighbors > Culturally Dominant, distance/land desire checks)
+- Military access exception for defensive wars
+
+**PHASE 1.5: INTERIM SOLUTION USING EXISTING JOIN WAR MECHANICS** (1-2 months) - **OPTIONAL**
+- Implement interim solution using `can_join_offensive_war_with` and `can_join_defensive_war_with` triggers
+- Original owner priority system (using `previous_owner` check)
+- Optional participation events (countries can refuse without penalties)
+- Overlord special options (refuse or cancel vassal status)
+- This provides immediate relief from forced participation while full system is developed
+- Can be deprecated or merged into Phase 2 once full Intervention Right Purchase System is implemented
+
+**PHASE 2: INTERVENTION RIGHT PURCHASE SYSTEM - CORE MECHANICS** (4-6 months)
+- Early alert system (rebels at 80-90%, eligibility-based notification system)
+- Intervention Right purchase mechanism: Adapt press_claims action structure for Secessionist rebellions (but grants right to join existing civil war, not declare new war)
+- Reuse situation framework (create secessionist_rebellion situation with visibility triggers like fall_of_delhi)
+- Adapt price calculation (scaled_gold with additional factors)
+- Implement select_trigger for rebel locations
+- Add Intervention Right granting effect (similar to press_claims, but grants ability to join war)
+- Top-ranked same-culture selection: Use `ordered_country` with ranking formula, `max = 1` (like Italian Wars)
+- Rival notification system: Notify all rivals of defender (staggered 5-15 days)
+- Basic mercenary hiring for rebels (ducats allocated to rebels, mercenary hiring mechanism, gathering before revolution)
+- **Optional Enhancement (Phase 2B - Uses Built-In Game Limits):** Secret regular training - ducats fund secretly trained regulars (not visible on map) that spawn when revolution begins. **Balance Solution:** When rebels break out, they form a rebel country (normal country via `start_civil_war`). This rebel country is automatically limited by built-in game mechanics: manpower pool (limited by population and buildings in rebel-controlled locations), recruitment capacity (limited by locations with `can_recruit_regiment_in_this_location` - requires barracks, regimental_camp, etc.), training speed (`max_regiments_trained_at_same_time` per location), and economic constraints (maintenance costs scale with rebel country's income). These natural limits prevent overpowered armies without manual percentage caps. This feature leverages existing game systems for natural balance.
+- $game_concept_situation$ framework implementation (create $game_concept_situation$ when rebels reach 80-90%, define visibility triggers, implement $game_concept_situation$ actions, track purchased Intervention Rights)
+- Game setting implementation (add secessionist_notification_frequency game rule with 5 options)
+- Notification control mechanisms (cooldown system, eligibility restrictions, strict filtering checks)
+- Integration with existing civil war system: Use `join_war_as_attacker` with `reason = intervene` (like `intervene_in_subject_civil_war`)
+
+**PHASE 3: INTERVENTION RIGHT PURCHASE SYSTEM - ENHANCEMENTS** (3-4 months)
+- Support rebels integration (synergy with Intervention Right purchase, enhanced rebel progress)
+- Advanced mercenary mechanics (availability based on region, quality and cost variations)
+- Enhanced defender counter-strategies (improved rebel crackdown effectiveness)
+- Notification aggregation (multiple rebellions in same region aggregated into single notification)
+
+**PHASE 4: POLISH AND OPTIMIZATION** (Ongoing)
+- Balance adjustments based on player feedback
+- Performance optimization
+- Additional game settings and customization options
+- Historical event integration
+- Tutorial and tooltip improvements
+
+**RECOMMENDED IMPLEMENTATION PATH:**
+1. Start with Phase 0 (Immediate Hotfix) - 2-3 weeks: Fixes most severe issues immediately, low risk, high impact
+2. Continue with Phase 1 (Critical Fixes) - 2-3 months: Addresses core gameplay problems, provides player control
+3. Evaluate Phase 2 (Intervention Right Purchase System) after Phase 1: If player feedback positive and resources allow, implement comprehensive redesign using proven precedents
+4. Ongoing Phase 4 improvements based on player feedback
+
+## CONCLUSION
+
+The Intervention Right System solves forced participation, original owner ignored problem, slow $game_concept_casus_belli$ creation, rebel military weakness, notification spam, world war escalation, and vassal gaming. It uses proven mechanics (`press_claims`, `ordered_country`, `join_war_as_attacker`) and provides optional participation with balanced escalation. Original owner priority restored (100 points bonus). Built-in game limits provide natural balance. Cost accounts for cultural tradition penalties and counterespionage. Early alert system (80-90%) enables timely intervention. Eligibility restrictions prevent world wars while allowing strategic rivals to exploit opportunities.
+
+**TERMINOLOGY NOTE**: "Intervention Right" grants the right to JOIN an existing civil war (when rebels break out), not to declare a new war.
+
+---
+
+### NOTE ON CONTRIBUTING TO PARADOX DEVELOPMENT
+
+I am interested in contributing to Paradox Interactive's game development and would welcome opportunities to discuss how my analytical approach to game mechanics design could be valuable to the development team.

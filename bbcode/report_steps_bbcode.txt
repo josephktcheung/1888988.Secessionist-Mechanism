@@ -1,0 +1,213 @@
+[center][size=150][b]Steps to Reproduce[/b][/size][/center]
+
+Multiple game saves have been prepared to demonstrate these issues. Save file IDs are provided for each set.
+
+[b]CASE 1: Byzantium SAVES (Demonstrates Issues 1, 3, 4, 6, and 7)[/b]
+
+Save File ID: [b]#f40b1288[/b]
+
+Load the Byzantium save files. The saves are set up with:
+[list]
+[*]Byzantium has conquered most Ottomans territories
+[*]Byzantium released Vassal Hudavendigar and ceded all Ottomans territories to it
+[*]Byzantium has an Alliance with Trebizond
+[*]Turkish Secessionists Rebellion is ready to spawn (or has already spawned)
+[*][b]CRITICAL:[/b] The rebelling territories were originally owned by Ottomans. Ottomans still exist and are the [b]original owner[/b] of these territories.
+[*]Eretnids is the culturally dominant Country for Turkish culture (this is why it gets selected for support)
+[/list]
+
+[b]Steps to observe Issue 1[/b] (Same-Culture Countries Forced to Join):
+
+[list=1]
+[*]Load the Byzantium save 1337.7.2 - Byzantium HUD Revolt 100%
+[*]Turkish rebellion progress in Hudavendigar is set to 100% using console command
+[*]When Secessionists Rebels and declare Civil War, observe that Eretnids (the culturally dominant Country for Turkish culture) is automatically and forcibly called to War on the Rebel side (save: 1337.8.1 - Byzantium HUD ERE War)
+[*][b]CRITICAL OBSERVATION:[/b] Observe that Ottomans (the original owner of the rebelling territories) are [b]COMPLETELY IGNORED[/b] by the system. Ottomans are not selected, even though they have the strongest historical claim to these territories.
+[*]Observe that Eretnids cannot refuse this call - it is forced into the War on day 1
+[*]If Eretnids has a Truce with Byzantium, observe that it receives -50 Stability penalty for "breaking Truce" even though it had no choice
+[*][b]Note:[/b] Eretnids is selected because it is the culturally dominant Country for Turkish culture, but players cannot predict this selection as the mechanism is hardcoded in the engine. [b]The system completely ignores original ownership[/b] - Ottomans (original owner) are not selected because they are not the culturally dominant Turkish Country.
+[/list]
+
+[b]Steps to observe Issue 3[/b] (Vassal War Leadership):
+
+[list=1]
+[*]Load the Byzantium save 1337.8.1 - Byzantium HUD ERE War
+[*]When the Civil War starts, observe that Byzantium is forcibly dragged into the War on day 1
+[*]Check the War panel - observe that Vassal Hudavendigar is the defensive War Leader, NOT Byzantium
+[*]Try to call ally Trebizond to War - observe that it's impossible because Byzantium is not the War Leader
+[*]Try to request military access from Ahis or Candarids - observe that it's impossible because of low opinion or [code]block_when_at_war = yes[/code]
+[*]Observe that Byzantium cannot control peace negotiations - only the AI Vassal Hudavendigar can make peace
+[*]Observe that Byzantium cannot obtain military access to attack Eretnids, creating a stalemate situation
+[/list]
+
+[b]Steps to observe Issue 4[/b] (Inconsistency in Alliance Auto-Call):
+
+[list=1]
+[*]Load the Byzantium save 1337.8.1 - Byzantium HUD ERE War
+[*]When Civil War starts, observe that Trebizond (Byzantium's ally) does NOT automatically join the War
+[*]Try to manually call Trebizond - observe that it's impossible because Byzantium is not the War Leader
+[*]This demonstrates the inconsistency: if Byzantium were the War Leader, Byzantium can ask Trebizond to join, but since the Vassal is the leader, Byzantium cannot call its ally
+[/list]
+
+[b]Steps to observe Issue 6[/b] (AI Vassal Suboptimal Decisions):
+
+[list=1]
+[*]Load the Byzantium save 1339.2.1 - Byzantium HUD ERE War Stuck
+[*]Occupy all rebel territories and transfer control to Vassal Hudavendigar
+[*]Achieve 45%+ warscore
+[*]Wait for AI Vassal Hudavendigar to make peace
+[*]Observe that AI Vassal chooses white peace instead of annexing the Secessionists, even though annexation only costs 2 peace offer points
+[*]Observe that Byzantium loses 7 locations which become new Secessionists, becoming a Vassal of Eretnids
+[/list]
+
+[b]Steps to observe Issue 7[/b] (Overlord Forced to Join):
+
+[list=1]
+[*]Load any Byzantium save during the Civil War
+[*]Observe that Byzantium (Overlord of Hudavendigar) is automatically dragged into the War
+[*]Observe that this happens through [code]join_defensive_wars_always[/code] in [code]secessionists.txt[/code]
+[/list]
+
+[b]CASE 2: France SAVES - Personal Union BREAKING (Demonstrates Issue 2)[/b]
+
+Save File ID: [b]#51d1fcfd[/b]
+
+Load the France Personal Union save files. The saves demonstrate:
+[list]
+[*]France has formed a Personal Union with Sicily (France as Senior Partner)
+[*]France has conquered Sicilian-culture territory from Naples
+[*]Sicilian Secessionists Rebellion is ready to spawn
+[/list]
+
+[b]Steps to observe Issue 2[/b] (Personal Union Breaking):
+
+[list=1]
+[*]Load save 1337.5.1.2 - France Personal Union Sicily, No CB Naples
+[list]
+[*]France has formed Personal Union with Sicily using console command [code]create_pu SIC[/code]
+[*]France has declared No CB War against Naples
+[/list]
+[*]Load save 1337.6.1 - France Conquer Naples
+[list]
+[*]France has conquered Calabria Ultra Province (Sicilian culture)
+[/list]
+[*]Load save 1337.7.1 - France Sicilian Rebel 100%
+[list]
+[*]Sicilian rebellion progress set to 100% using console command
+[/list]
+[*]Load save 1337.8.1 - France Personal Union Broken
+[list]
+[*]Secessionists Rebellion breaks out
+[*]Observe that Sicily (culturally dominant for Sicilian culture) is forcibly called to support the rebellion
+[*]Observe that the Personal Union between France and Sicily immediately breaks on day 1
+[*]Observe that Sicily is now at War with France (its former Senior Partner)
+[/list]
+[/list]
+
+[b]VERIFICATION OF PROTECTION FOR OTHER SUBJECT TYPES:[/b]
+
+The following saves demonstrate that Vassal and Fiefdom are correctly excluded from Secessionists calls. However, other subject types have not been tested and may also be affected:
+
+[b]EU5 Subject Types (Status):[/b]
+[list]
+[*]Personal Union: [b]VERIFIED AFFECTED[/b]
+[*]Vassal: [b]VERIFIED EXCLUDED[/b]
+[*]Fiefdom: [b]VERIFIED EXCLUDED[/b]
+[*]Tributary, Dominion, March, Appanage, Sāmanta, Tǔsī, Uç Bey, etc.: NOT TESTED
+[/list]
+
+[b]CASE 3: France SAVES - Fiefdom (No Call)[/b]
+
+Save File ID: [b]#1177c64a[/b]
+
+[list=1]
+[*]Load save 1337.4.1 - France ANNEX Sicily, Create Fiefdom subject
+[list]
+[*]France annexed Sicily using console command
+[*]Created a new Sicily Fiefdom subject
+[/list]
+[*]Load save 1337.6.1 - France Conquer Naples
+[list]
+[*]France conquered Calabria Ultra Province (Sicilian culture)
+[/list]
+[*]Load save 1337.7.1 - France Sicilian Rebel 100%
+[list]
+[*]Sicilian rebellion progress set to 100% using console command
+[/list]
+[*]Load save 1337.8.1 - France Sicilian Secessionists NOT calling Sicily
+[list]
+[*]Secessionists Rebellion breaks out
+[*]Observe that Sicily (Fiefdom) is NOT called to support the Rebellion
+[*]This demonstrates that Fiefdom are correctly excluded
+[/list]
+[/list]
+
+[b]CASE 4: France SAVES - Vassal (No Call)[/b]
+
+Save File ID: [b]#dae84461[/b]
+
+[list=1]
+[*]Load save 1337.4.1 - France ANNEX Sicily, Create Vassal subject
+[list]
+[*]France annexed Sicily using console command
+[*]Created a new Sicily Vassal subject
+[/list]
+[*]Load save 1337.6.10 - France Conquer Naples
+[list]
+[*]France conquered Calabria Ultra Province (Sicilian culture)
+[/list]
+[*]Load save 1337.7.1 - France Sicilian Rebel 100%
+[list]
+[*]Sicilian rebellion progress set to 100% using console command
+[/list]
+[*]Load save 1337.8.1 - France Secessionists NOT calling Sicily Vassal
+[list]
+[*]Secessionists Rebellion breaks out
+[*]Observe that Sicily (Vassal) is NOT called to support the Rebellion
+[*]This demonstrates that Vassal are correctly excluded
+[/list]
+[/list]
+
+[b]CONCLUSION:[/b] Personal Union are VERIFIED to receive Secessionists calls, while Vassal and Fiefdom are VERIFIED to be excluded. This creates an inconsistency where Personal Union break while some other subject types are protected. Other subject types have not been tested and may also be affected.
+
+[b]CASE 5: France SAVES - Coalition BYPASS AND Truce BREAKING (Demonstrates Issues 1, 5, and 8)[/b]
+
+Save File ID: [b]#75e13d1[/b]
+
+Load the France save files. The saves are set up with:
+[list]
+[*]France has formed Alliance with Aragon and Rome
+[*]France has defeated Castile in a No CB War and taken Castilian territories
+[*]Castilian Secessionists Rebellion is ready to spawn (or has already spawned)
+[*]Castile may be in a Coalition against France (or will join after Truce ends)
+[/list]
+
+[b]Steps to observe Issue 1[/b] (Same-Culture Countries Forced to Join):
+
+[list=1]
+[*]Load the France save 1338.4.1 - France Truce with Castile, Add Castilian Rebel to 100%
+[*]Console command is used to force Castilian rebellion progress to 100%
+[*]When Secessionists Rebels and declare Civil War, observe that Castile is automatically and forcibly called to War on the Rebel side
+[*]Observe that Castile cannot refuse this call - it is forced into the War
+[/list]
+
+[b]Steps to observe Issue 8[/b] (Truce Breaking):
+
+[list=1]
+[*]Load the France save 1338.4.1 - France Truce with Castile, Add Castilian Rebel to 100%
+[*]If Castile and France have a Truce when the rebellion War begins, observe that Castile receives -50 Stability penalty for "breaking Truce" in the next month when rebellion breaks out
+[*]Observe that Castile is judged as actively breaking the Truce even though it was forcibly called to War and had no choice
+[/list]
+
+[b]Steps to observe Issue 5[/b] (Coalition Bypass):
+
+[list=1]
+[*]Load the France save 1346.8.2 - France Castile Joint Coalition, Add Castilian Rebel to 100%
+[*]Castile has joined a Coalition against France
+[*]When Secessionists Rebels, observe that Castile is forcibly called to War as the Attacker (Rebel side)
+[*]Observe that Castile cannot call Coalition members (Portugal, Navarre) to join the War because it is the attacker
+[*]Observe that France (Defender) CAN call Allies (Aragon, Rome) to join the defensive War
+[*]Result: France can bypass the Coalition to attack Castile alone, while Castile cannot obtain Coalition or ally support
+[*]Observe that Castile will leave the Coalition after the rebellion War ends
+[/list]
+
