@@ -90,8 +90,6 @@ When a $secessionists$ $game_concept_rebellion$ breaks out:
 
 This creates a dangerous escalation mechanism where the $game_concept_defender$ can systematically use $secessionists$ $game_concept_rebellions$ to attack their enemies' $game_concept_alliance$ blocs asymmetrically.
 
-**Historical Rationality:** This mechanism violates historical logic. In real history (e.g., American $game_concept_civil_war$), external $game_concept_allies$ had the right to choose whether to intervene, usually choosing neutrality. The game forces $game_concept_allies$ to join, which is historically unreasonable.
-
 ### Issue 10: $WAR_LATERALVIEW_ANNEX_REVOLTER$ Button Misapplied to War Participant $game_concept_countries$ (Severe - GAME-BREAKING)
 
 When a $secessionists$ $game_concept_rebellion$ spawns as a $game_concept_society_of_pops$ (landless $game_concept_country$ with no territory) due to low population size ($game_concept_province$ has <50% of the rebelling culture's population), the $game_concept_rebel$ $game_concept_country$ has no territory. When the $game_concept_rebel$ $game_concept_country$'s troops are wiped out and the $game_concept_rebellion$ is eliminated, the $game_concept_war$ continues and a war participant $game_concept_country$ becomes the $game_concept_war_leader$. The $WAR_LATERALVIEW_ANNEX_REVOLTER$ button, designed to annex the entire $game_concept_revolter$ $game_concept_country$, can then be used to annex the entire war participant $game_concept_country$ (e.g., $FRA$ - 3rd largest $game_concept_country$ at game start) with no $game_concept_antagonism$ generated.
