@@ -90,8 +90,6 @@ When a Secessionists Rebellion breaks out:
 
 This creates a dangerous escalation mechanism where the Defender can systematically use Secessionists Rebellions to attack their enemies' Alliance blocs asymmetrically.
 
-**Historical Rationality:** This mechanism violates historical logic. In real history (e.g., American Civil War), external Allies had the right to choose whether to intervene, usually choosing neutrality. The game forces Allies to join, which is historically unreasonable.
-
 ### Issue 10: Annex Revolter Button Misapplied to War Participant Countries (Severe - GAME-BREAKING)
 
 When a Secessionists Rebellion spawns as a Society of Pops (landless Country with no territory) due to low population size (Province has <50% of the rebelling culture's population), the Rebel Country has no territory. When the Rebel Country's troops are wiped out and the Rebellion is eliminated, the War continues and a war participant Country becomes the War Leader. The Annex Revolter button, designed to annex the entire Revolter Country, can then be used to annex the entire war participant Country (e.g., France - 3rd largest Country at game start) with no Antagonism generated.
