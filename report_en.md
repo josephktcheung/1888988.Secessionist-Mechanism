@@ -611,7 +611,7 @@ Save File ID: **#39d23961**
 - 1337.8.1 - France 1. Set Cash 0
 - 1337.8.9 - France 1. Gain 350.72 War Reparation, AAA00 Becomes Landless Secessionist
 - 1337.8.1 - France 2. Set Cash 0
-- 1337.8.11 - France 2. Gain 350.72 War Reparation, AAA00 Becomes Landless Secessionist
+- 1337.8.11 - France 2. Gain 350.72 War Reparation, AAA00 Becomes landed INDEPENDENT
 
 ---
 
