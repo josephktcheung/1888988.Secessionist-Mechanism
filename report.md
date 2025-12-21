@@ -14,7 +14,7 @@
 
 ## Summary
 
-The $secessionists$ mechanism has critical design flaws that create game-breaking exploits. Same-culture $game_concept_countries$ are forcibly called to $game_concept_war$ without player control, **completely ignoring original ownership** in favor of cultural dominance. The mechanism breaks $game_concept_personal_union$, prevents player control when $vassal$s lead $game_concept_wars$, incorrectly applies $game_concept_truce$ penalties, and allows the $WAR_LATERALVIEW_ANNEX_REVOLTER$ button to annex entire war participant $game_concept_countries$ (e.g., $FRA$) with no $game_concept_antagonism$. Asymmetric $game_concept_alliance$ calling creates dangerous world $game_concept_war$ escalation where $game_concept_defender$s can coordinate while forcibly called $game_concept_attacker$s cannot. Landless $secessionists$ $game_concept_rebellions$ ($game_concept_society_of_pops$) produce inconsistent outcomes where culturally dominant $game_concept_countries$ gain nothing for fighting, unlike land-based $game_concept_rebellions$ which become $vassal$s. These flaws enable systematic exploits: (1) $vassal$ players can use $game_concept_overlords$ as weapons to attack same-culture $game_concept_countries$ (VERIFIED); (2) Players can attack opponents during $game_concept_truce$ periods by triggering $secessionists$ $game_concept_rebellions$ that force victims to join and receive -50 $game_concept_stability$ penalties.
+The $secessionists$ mechanism has critical design flaws that create game-breaking exploits. Same-culture $game_concept_countries$ are forcibly called to $game_concept_war$ without player control, **completely ignoring original ownership** in favor of cultural dominance. The mechanism breaks $game_concept_personal_union$, creates inconsistent $game_concept_war$ leadership logic where $vassal$s lead $secessionists$ $game_concept_civil_war$s (unlike normal $game_concept_war$ declarations where $game_concept_overlords$ lead), prevents player control when $vassal$s lead $game_concept_wars$, incorrectly applies $game_concept_truce$ penalties, and allows the $WAR_LATERALVIEW_ANNEX_REVOLTER$ button to annex entire war participant $game_concept_countries$ (e.g., $FRA$) with no $game_concept_antagonism$. Asymmetric $game_concept_alliance$ calling creates dangerous world $game_concept_war$ escalation where $game_concept_defender$s can coordinate while forcibly called $game_concept_attacker$s cannot. Landless $secessionists$ $game_concept_rebellions$ ($game_concept_society_of_pops$) produce inconsistent outcomes where culturally dominant $game_concept_countries$ gain nothing for fighting, unlike land-based $game_concept_rebellions$ which become $vassal$s. These flaws enable systematic exploits: (1) $vassal$ players can use $game_concept_overlords$ as weapons to attack same-culture $game_concept_countries$ (VERIFIED); (2) Players can attack opponents during $game_concept_truce$ periods by triggering $secessionists$ $game_concept_rebellions$ that force victims to join and receive -50 $game_concept_stability$ penalties.
 
 ---
 
@@ -49,6 +49,32 @@ This creates an inconsistency where $game_concept_personal_union$ are vulnerable
 ### Issue 3: $vassal$ $game_concept_war$ Leadership Problem (Severe)
 
 If a player creates a $vassal$ that becomes the $game_concept_defender$ in a $game_concept_civil_war$, the player is forcibly dragged into the $game_concept_war$ but does not become the $game_concept_war_leader$. The AI $vassal$ controls all peace negotiations. The player cannot call $game_concept_allies$, cannot obtain $game_concept_military_access$, and must bear all $game_concept_war$ costs without control.
+
+**CRITICAL INCONSISTENCY: Normal $game_concept_war$ Declaration vs. $secessionists$ $game_concept_civil_war$**
+
+There is a fundamental inconsistency in game logic regarding $vassal$ $game_concept_war$ leadership between normal $game_concept_war$ declarations and $secessionists$ $game_concept_civil_war$s:
+
+**Normal $game_concept_war$ Declaration (using $game_concept_casus_belli$ and $game_concept_diplomats$):**
+- When a $game_concept_country$ declares $game_concept_war$ against a $vassal$ (e.g., $BYZ$ declares $game_concept_war$ against $ALB$ where $ALB$ is a $vassal$ of $NAP$), the $game_concept_overlord$ ($NAP$) becomes the $game_concept_war_leader$, NOT the $vassal$ ($ALB$)
+- The $game_concept_overlord$ controls all peace negotiations and $game_concept_war$ decisions
+- This is the expected behavior for normal $game_concept_war$ declarations
+
+**$secessionists$ $game_concept_civil_war$ (Issue 3):**
+- When a $vassal$ becomes the $game_concept_defender$ in a $secessionists$ $game_concept_civil_war$, the $vassal$ becomes the $game_concept_war_leader$, NOT the $game_concept_overlord$
+- The $game_concept_overlord$ is forcibly dragged into the $game_concept_war$ but does not control peace negotiations
+- The AI $vassal$ controls all peace negotiations, while the $game_concept_overlord$ has no control
+
+**The Inconsistency:**
+- **Normal $game_concept_war$ declarations:** $game_concept_overlord$ is $game_concept_war_leader$ when $vassal$ is attacked
+- **$secessionists$ $game_concept_civil_war$s:** $vassal$ is $game_concept_war_leader$ when $vassal$ is $game_concept_defender$
+- This creates inconsistent game logic where the same relationship ($game_concept_overlord$-$vassal$) produces different $game_concept_war$ leadership outcomes depending on how the $game_concept_war$ starts
+- Players cannot predict or understand which party will control the $game_concept_war$ based on the relationship structure alone
+
+**Impact:**
+- Creates confusion for players who expect consistent behavior
+- Makes it impossible to predict $game_concept_war$ leadership based on subject relationships
+- Breaks game logic consistency between different $game_concept_war$ types
+- In $secessionists$ $game_concept_civil_war$s, $game_concept_overlords$ lose control they would normally have in regular $game_concept_wars$
 
 ### Issue 4: Inconsistency in $game_concept_alliance$ Auto-Call
 
@@ -172,9 +198,12 @@ When a $secessionists$ $game_concept_rebellion$ spawns, its behavior differs dra
 
 **Landless $secessionists$ $game_concept_rebellions$ (<50% cultural population - $game_concept_society_of_pops$):**
 - When the $game_concept_rebellion$ breaks out, it has no territory (only pops)
-- When the $game_concept_rebellion$ wins independence, it becomes an **INDEPENDENT** $game_concept_country$, NOT a $vassal$ of the culturally dominant $game_concept_country$
-- The culturally dominant $game_concept_country$ gains **NOTHING** for fighting the $game_concept_war$ (or minimal $game_concept_war_reparations$ at 100% $game_concept_war_score$)
+- When the $game_concept_rebellion$ wins independence, it has **TWO INCONSISTENT OUTCOMES:**
+  1. **Becomes an INDEPENDENT $game_concept_country$**, NOT a $vassal$ of the culturally dominant $game_concept_country$
+  2. **Becomes a landless $secessionists$ $vassal$** with no territory (only 1 unit of cavalry with 5 people) - effectively useless
+- The culturally dominant $game_concept_country$ gains **ALMOST NOTHING** for fighting the $game_concept_war$ - only minimal $game_concept_war_reparations$ (314.82 to 350.72 ducats) even at 100% $game_concept_war_score$
 - The AI culturally dominant $game_concept_country$ may not take any land even at 100% $game_concept_war_score$, only accepting $game_concept_war_reparations$
+- **CRITICAL:** The entire secessionist concept falls apart for landless rebels - culturally dominant $game_concept_countries$ fight major $game_concept_wars$ between major powers (e.g., $FRA$ vs $CAS$) for essentially nothing
 
 **VERIFIED EXAMPLES:**
 
@@ -191,24 +220,43 @@ When a $secessionists$ $game_concept_rebellion$ spawns, its behavior differs dra
 - The AI may only accept $game_concept_war_reparations$ or white peace, leaving the $game_concept_defender$ with all territory intact
 - This is inconsistent with land-based $game_concept_rebellions$ where the culturally dominant $game_concept_country$ gains a $vassal$
 
+**Example 3 - Landless Rebel Behavior ($FRA$ vs $CAS$ - VERIFIED):**
+- $CAS$ conquers Loudun (French culture territory)
+- French $secessionists$ $game_concept_rebellion$ spawns as $game_concept_society_of_pops$ (<50% French culture population)
+- $FRA$ (culturally dominant) is forcibly called to support the $game_concept_rebellion$
+- $FRA$ fights $CAS$ (two major powers in Europe) and achieves 100% $game_concept_war_score$
+- **Outcome 1:** The landless rebel (AAA00) becomes a **landless $secessionists$ $vassal$** of $FRA$ with no territory, only 1 unit of cavalry (5 people) - effectively useless
+- **Outcome 2:** The landless rebel becomes a **settled country** but **NOT a $secessionists$ $vassal$** of $FRA$ - completely independent
+- $FRA$ gains only **314.82 to 350.72 ducats** ($game_concept_war_reparations$) despite fighting an entire major $game_concept_war$ with 100% $game_concept_war_score$
+- $FRA$ gains **NO TERRITORY** and either **NO USEFUL $vassal$** (landless vassal with 5 people) or **NO $vassal$ AT ALL** (independent country)
+- **Summary:** Two major powers ($FRA$ and $CAS$) fight a $game_concept_war$ for either: (1) a landless $secessionists$ $vassal$ with 1 unit of cavalry (5 people), (2) an independent settled country, or (3) 314.82 to 350.72 ducats. This demonstrates that the secessionist concept completely falls apart for landless rebels - there is almost no benefit to fighting in a secessionist $game_concept_war$ for a landless secessionist because the supposedly overlord $FRA$ gains almost nothing, and the landless rebel does NOT become $FRA$'s useful $vassal$ if it becomes settled
+
 **Why This Is Problematic:**
 - **Inconsistent outcomes:** Same mechanism produces different results based on population size
-- **No reward for culturally dominant $game_concept_country$:** Landless $game_concept_rebellions$ provide no benefit to the culturally dominant $game_concept_country$ that is forced to fight
+- **No meaningful reward for culturally dominant $game_concept_country$:** Landless $game_concept_rebellions$ provide almost no benefit to the culturally dominant $game_concept_country$ that is forced to fight - only minimal $game_concept_war_reparations$ (314-350 ducats) even at 100% $game_concept_war_score$
+- **Two problematic outcomes:** Landless rebels either become independent (no $vassal$ reward) or become useless landless $vassal$s with no territory (only 5 people in 1 unit)
+- **Major $game_concept_war$ for nothing:** Two major powers fight a $game_concept_war$ for essentially nothing - the culturally dominant $game_concept_country$ gains almost no benefit despite winning with 100% $game_concept_war_score$
 - **AI suboptimal behavior:** AI may not take land even when it should, wasting $game_concept_war_score$
-- **Breaks intended design:** The $secessionists$ mechanism is supposed to reward culturally dominant $game_concept_countries$ with $vassal$s, but landless $game_concept_rebellions$ break this design
-- **Unfair to players:** Players who are forcibly called into landless $game_concept_rebellion$ $game_concept_wars$ gain nothing for their effort
+- **Breaks intended design:** The $secessionists$ mechanism is supposed to reward culturally dominant $game_concept_countries$ with useful $vassal$s, but landless $game_concept_rebellions$ completely break this design
+- **Unfair to players:** Players who are forcibly called into landless $game_concept_rebellion$ $game_concept_wars$ gain almost nothing for their effort
+- **Secessionist concept falls apart:** The entire secessionist concept becomes meaningless for landless rebels, as they can be independent or become useless landless $vassal$s
 
 **Technical Details:**
 - When $game_concept_province$ has <50% population of rebelling culture, $game_concept_rebellion$ spawns as `country_type = pop` ($game_concept_society_of_pops$ - landless with no territory)
-- When `country_type = pop` wins independence, it becomes an independent $game_concept_country$, not a $vassal$
-- The `secessionists.txt` subject type definition does not have `ai_wants_to_be_overlord`, which may explain why AI doesn't try to make landless rebels into $vassal$s
+- When `country_type = pop` wins independence, it has inconsistent outcomes:
+  1. Becomes an independent $game_concept_country$ (not a $vassal$)
+  2. Becomes a landless $secessionists$ $vassal$ with no territory (only pops/units, effectively useless)
+- The `secessionists.txt` subject type definition does not have `ai_wants_to_be_overlord`, which may explain why AI doesn't try to make landless rebels into useful $vassal$s
 - The `PEACE_MAKE_SUBJECT_REVOLT_WAR = 0` define in `00_defines.txt` indicates AI has no interest in making subjects in revolt $game_concept_wars$, which explains suboptimal peace decisions
+- Even when landless rebels become $vassal$s, they have no territory and minimal military (e.g., 1 unit of cavalry with 5 people), making them effectively useless
 
 **Impact:**
-- Culturally dominant $game_concept_countries$ gain nothing from supporting landless $game_concept_rebellions$
-- Players are forced to fight $game_concept_wars$ with no reward
+- Culturally dominant $game_concept_countries$ gain almost nothing from supporting landless $game_concept_rebellions$ - only minimal $game_concept_war_reparations$ (314-350 ducats) even at 100% $game_concept_war_score$
+- Major powers fight major $game_concept_wars$ for essentially nothing (e.g., $FRA$ vs $CAS$ for a landless $vassal$ with 5 people or an independent country)
+- Players are forced to fight $game_concept_wars$ with almost no reward
 - AI makes suboptimal peace decisions, not taking land even at 100% $game_concept_war_score$
-- Breaks the intended design of the $secessionists$ mechanism where culturally dominant $game_concept_countries$ should gain $vassal$s
+- Breaks the intended design of the $secessionists$ mechanism where culturally dominant $game_concept_countries$ should gain useful $vassal$s
+- The entire secessionist concept becomes meaningless for landless rebels, as they either become independent or useless landless $vassal$s
 
 ---
 
@@ -288,6 +336,7 @@ The $secessionists$ mechanism creates a severe exploit that allows knowledgeable
 These issues are critical because:
 - Players have absolutely no control over being dragged into $game_concept_wars$
 - **Original owners are completely ignored** - The system ignores original ownership and only looks at cultural dominance (e.g., $TUR$ ignored in favor of $ERE$ in $BYZ$ case)
+- **Inconsistent $game_concept_war$ leadership logic** - In normal $game_concept_war$ declarations, $game_concept_overlords$ become $game_concept_war_leader$ when their $vassal$s are attacked, but in $secessionists$ $game_concept_civil_war$s, $vassal$s become $game_concept_war_leader$ instead. This creates unpredictable and inconsistent game logic that breaks player expectations
 - $game_concept_personal_union$ break unexpectedly due to forced participation
 - Players receive severe penalties (-50 $game_concept_stability$) for actions they did not choose
 - **$game_concept_rebellions$ that spawn as $game_concept_society_of_pops$ cause warscore costs to be applied to wrong target** - When $game_concept_society_of_pops$ troops are wiped out and $game_concept_rebellion$ is eliminated, the $game_concept_war$ continues with the war participant $game_concept_country$ as $game_concept_war_leader$. The low warscore costs (intended only for annexing $game_concept_rebels$) remain active, allowing the $game_concept_defender$ to annex the war participant $game_concept_country$ at 25% cost instead of just the $game_concept_rebels$. This allows major powers like $FRA$ (3rd largest $game_concept_country$ at game start) to be annexed by smaller $game_concept_countries$ like $ENG$
@@ -299,7 +348,7 @@ These issues are critical because:
 - **EXPLOIT 2:** Players can attack opponents (AI or human) during a $game_concept_truce$ period by intentionally creating a $game_concept_truce$ period through War 2, then triggering $secessionists$ $game_concept_rebellion$ which forces the victim to join and receive -50 $game_concept_stability$ penalties, preventing the victim from calling $game_concept_allies$. This completely breaks game balance in both single-player and multiplayer contexts
 - **WORLD $game_concept_war$ ESCALATION:** A single local $game_concept_rebellion$ can escalate into a world $game_concept_war$ due to asymmetric $game_concept_alliance$ calling. The $game_concept_defender$ can call all $game_concept_allies$, while forcibly called $game_concept_attacker$ cannot call its own $game_concept_allies$, creating a dangerous escalation mechanism
 - **SMALL SUBJECTS DRAGGED INTO DISTANT $game_concept_wars$:** Any subject (e.g., $vassal$, $secessionists$ subject) that happens to be culturally dominant is forcibly called to support distant rebellions of the same culture, even when thousands of kilometers away. Players lose control over their subjects' foreign policy and must investigate to find out why their subjects are at $game_concept_war$ (VERIFIED: $YUA$ case - small Mongolian subject in Mongolia region forced to support rebellion in Georgia 6000+ km away)
-- **INCONSISTENT BEHAVIOR OF LAND-BASED VS. LANDLESS $secessionists$:** Land-based $secessionists$ $game_concept_rebellions$ (>50% cultural population) become $vassal$s of the culturally dominant $game_concept_country$ when they win, while landless $secessionists$ $game_concept_rebellions$ (<50% cultural population - $game_concept_society_of_pops$) become independent $game_concept_countries$ with no reward for the culturally dominant $game_concept_country$. This creates inconsistent outcomes where culturally dominant $game_concept_countries$ gain nothing from fighting landless $game_concept_rebellion$ $game_concept_wars$, and AI may not take land even at 100% $game_concept_war_score$ (VERIFIED: $ENG$ vs $FRA$ case - $FRA$ fought entire $game_concept_war$ and gained only minimal $game_concept_war_reparations$, no territory or $vassal$)
+- **INCONSISTENT BEHAVIOR OF LAND-BASED VS. LANDLESS $secessionists$:** Land-based $secessionists$ $game_concept_rebellions$ (>50% cultural population) become $vassal$s of the culturally dominant $game_concept_country$ when they win, while landless $secessionists$ $game_concept_rebellions$ (<50% cultural population - $game_concept_society_of_pops$) have inconsistent outcomes: either become independent $game_concept_countries$ or useless landless $vassal$s (e.g., 1 unit of cavalry with 5 people). This creates inconsistent outcomes where culturally dominant $game_concept_countries$ gain almost nothing from fighting landless $game_concept_rebellion$ $game_concept_wars$ (only 314-350 ducats even at 100% $game_concept_war_score$), and the entire secessionist concept falls apart for landless rebels. Major powers fight major $game_concept_wars$ for essentially nothing (VERIFIED: $FRA$ vs $CAS$ case - $FRA$ fought entire $game_concept_war$ with 100% $game_concept_war_score$ and gained only 314.82 to 350.72 ducats, no territory or useful $vassal$; landless rebel either became independent or useless landless $vassal$ with 5 people)
 
 ---
 
@@ -468,6 +517,52 @@ Load the $FRA$ save files. The saves are set up with:
 6. Result: $FRA$ can bypass the $game_concept_coalition$ to attack $CAS$ alone, while $CAS$ cannot obtain $game_concept_coalition$ or ally support
 7. Observe that $CAS$ will leave the $game_concept_coalition$ after the rebellion $game_concept_war$ ends
 
+### CASE 6: $FRA$ vs $CAS$ LANDLESS REBEL BEHAVIOR (Demonstrates Issue 12 - VERIFIED)
+
+Save File ID: **#39d23961**
+
+Load the $FRA$ vs $CAS$ landless rebel save files. The saves demonstrate:
+- $CAS$ has conquered Loudun (French culture territory)
+- French $secessionists$ $game_concept_rebellion$ spawns as $game_concept_society_of_pops$ (<50% French culture population)
+- $FRA$ (culturally dominant) is forcibly called to support the $game_concept_rebellion$
+
+**Steps to observe Issue 12** (Landless Rebel Behavior):
+
+1. Load save 1337.5.1 - $CAS$ Conquer Loudun, add revolt 100%
+   - Play as $CAS$
+   - Console: `conquer loudun`
+   - Add rebel progress to 1 (100%)
+2. Load save 1337.6.1 - $FRA$ Join Secessionist War, Occupy $CAS$, 1 - No Land Transferred to AAA00
+   - Play as $FRA$
+   - Console: `occupy_country CAS` to gain 100% $game_concept_war_score$
+   - Observe: No land is transferred to newly spawned tag AAA00 (a landless rebel)
+3. Load save 1337.6.1 - $FRA$ Join Secessionist War, Occupy $CAS$, 2 - Loudun Transferred to AAA00
+   - Play as $FRA$
+   - Console: `occupy_country CAS` to gain 100% $game_concept_war_score$
+   - Observe: Loudun is transferred to newly spawned tag AAA00 (a landless rebel)
+4. Load save 1337.8.1 - $FRA$ 1. Set Cash 0
+   - 2 months after save 2
+   - Set cash to 0 to check gained $game_concept_war_reparations$
+5. Load save 1337.8.9 - $FRA$ 1. Gain 350.72 War Reparation, AAA00 Becomes Landless Secessionist
+   - 9 days after save 2
+   - AAA00 makes peace with $CAS$
+   - Observe: $FRA$ gained 350.72 ducats, and AAA00 is a landless $secessionists$ $vassal$ with 1 unit of cavalry (5 people)
+6. Load save 1337.8.1 - $FRA$ 2. Set Cash 0
+   - 2 months after save 3
+   - Set cash to 0 to check gained $game_concept_war_reparations$
+7. Load save 1337.8.11 - $FRA$ 2. Gain 350.72 War Reparation, AAA00 Becomes Landless Secessionist
+   - 11 days after save 2
+   - AAA00 made peace with $CAS$
+   - Observe: $FRA$ gained 314.82 ducats, and AAA00 is now a settled country but **NOT a $secessionists$ $vassal$** of $FRA$
+
+**CRITICAL OBSERVATIONS:**
+- Two major powers ($FRA$ and $CAS$) fight a $game_concept_war$ for essentially nothing
+- Best case scenario with 100% $game_concept_war_score$: $FRA$ gains only 314.82 to 350.72 ducats ($game_concept_war_reparations$)
+- The landless rebel (AAA00) either:
+  1. Becomes a landless $secessionists$ $vassal$ with 1 unit of cavalry (5 people) - effectively useless
+  2. Becomes a settled country but **NOT a $secessionists$ $vassal$** of $FRA$ - completely independent
+- This demonstrates that the secessionist concept completely falls apart for landless rebels - there is almost no benefit to fighting in a secessionist $game_concept_war$ for a landless secessionist because the supposedly overlord $FRA$ gains almost nothing, and the landless rebel does NOT become $FRA$'s useful $vassal$ if it becomes settled
+
 ---
 
 ## Game Saves Provided
@@ -507,6 +602,16 @@ Save File ID: **#75e13d1**
 - 1338.4.1 - $FRA$ $game_concept_truce$ with $CAS$, Add Castilian Rebel to 100%
 - 1346.8.2 - $FRA$ $CAS$ Joint $game_concept_coalition$, Add Castilian Rebel to 100%
 - Additional saves demonstrating various scenarios
+
+**$FRA$ vs $CAS$ Landless Rebel Saves** (Issue 12 - VERIFIED):
+Save File ID: **#39d23961**
+- 1337.5.1 - $CAS$ Conquer Loudun, add revolt 100%
+- 1337.6.1 - $FRA$ Join Secessionist War, Occupy $CAS$, 1 - No Land Transferred to AAA00
+- 1337.6.1 - $FRA$ Join Secessionist War, Occupy $CAS$, 2 - Loudun Transferred to AAA00
+- 1337.8.1 - $FRA$ 1. Set Cash 0
+- 1337.8.9 - $FRA$ 1. Gain 350.72 War Reparation, AAA00 Becomes Landless Secessionist
+- 1337.8.1 - $FRA$ 2. Set Cash 0
+- 1337.8.11 - $FRA$ 2. Gain 350.72 War Reparation, AAA00 Becomes Landless Secessionist
 
 ---
 

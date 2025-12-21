@@ -14,7 +14,7 @@
 
 ## Summary
 
-The Secessionists mechanism has critical design flaws that create game-breaking exploits. Same-culture Countries are forcibly called to War without player control, **completely ignoring original ownership** in favor of cultural dominance. The mechanism breaks Personal Union, prevents player control when Vassals lead Wars, incorrectly applies Truce penalties, and allows the Annex Revolter button to annex entire war participant Countries (e.g., France) with no Antagonism. Asymmetric Alliance calling creates dangerous world War escalation where Defenders can coordinate while forcibly called Attackers cannot. Landless Secessionists Rebellions (Society of Pops) produce inconsistent outcomes where culturally dominant Countries gain nothing for fighting, unlike land-based Rebellions which become Vassals. These flaws enable systematic exploits: (1) Vassal players can use Overlords as weapons to attack same-culture Countries (VERIFIED); (2) Players can attack opponents during Truce periods by triggering Secessionists Rebellions that force victims to join and receive -50 Stability penalties.
+The Secessionists mechanism has critical design flaws that create game-breaking exploits. Same-culture Countries are forcibly called to War without player control, **completely ignoring original ownership** in favor of cultural dominance. The mechanism breaks Personal Union, creates inconsistent War leadership logic where Vassals lead Secessionists Civil Wars (unlike normal War declarations where Overlords lead), prevents player control when Vassals lead Wars, incorrectly applies Truce penalties, and allows the Annex Revolter button to annex entire war participant Countries (e.g., France) with no Antagonism. Asymmetric Alliance calling creates dangerous world War escalation where Defenders can coordinate while forcibly called Attackers cannot. Landless Secessionists Rebellions (Society of Pops) produce inconsistent outcomes where culturally dominant Countries gain nothing for fighting, unlike land-based Rebellions which become Vassals. These flaws enable systematic exploits: (1) Vassal players can use Overlords as weapons to attack same-culture Countries (VERIFIED); (2) Players can attack opponents during Truce periods by triggering Secessionists Rebellions that force victims to join and receive -50 Stability penalties.
 
 ---
 
@@ -49,6 +49,32 @@ This creates an inconsistency where Personal Union are vulnerable while some oth
 ### Issue 3: Vassal War Leadership Problem (Severe)
 
 If a player creates a Vassal that becomes the Defender in a Civil War, the player is forcibly dragged into the War but does not become the War Leader. The AI Vassal controls all peace negotiations. The player cannot call Allies, cannot obtain Military Access, and must bear all War costs without control.
+
+**CRITICAL INCONSISTENCY: Normal War Declaration vs. Secessionists Civil War**
+
+There is a fundamental inconsistency in game logic regarding Vassal War leadership between normal War declarations and Secessionists Civil Wars:
+
+**Normal War Declaration (using Casus Belli and Diplomats):**
+- When a Country declares War against a Vassal (e.g., Byzantium declares War against Albania where Albania is a Vassal of Naples), the Overlord (Naples) becomes the War Leader, NOT the Vassal (Albania)
+- The Overlord controls all peace negotiations and War decisions
+- This is the expected behavior for normal War declarations
+
+**Secessionists Civil War (Issue 3):**
+- When a Vassal becomes the Defender in a Secessionists Civil War, the Vassal becomes the War Leader, NOT the Overlord
+- The Overlord is forcibly dragged into the War but does not control peace negotiations
+- The AI Vassal controls all peace negotiations, while the Overlord has no control
+
+**The Inconsistency:**
+- **Normal War declarations:** Overlord is War Leader when Vassal is attacked
+- **Secessionists Civil Wars:** Vassal is War Leader when Vassal is Defender
+- This creates inconsistent game logic where the same relationship (Overlord-Vassal) produces different War leadership outcomes depending on how the War starts
+- Players cannot predict or understand which party will control the War based on the relationship structure alone
+
+**Impact:**
+- Creates confusion for players who expect consistent behavior
+- Makes it impossible to predict War leadership based on subject relationships
+- Breaks game logic consistency between different War types
+- In Secessionists Civil Wars, Overlords lose control they would normally have in regular Wars
 
 ### Issue 4: Inconsistency in Alliance Auto-Call
 
@@ -172,9 +198,12 @@ When a Secessionists Rebellion spawns, its behavior differs dramatically based o
 
 **Landless Secessionists Rebellions (<50% cultural population - Society of Pops):**
 - When the Rebellion breaks out, it has no territory (only pops)
-- When the Rebellion wins independence, it becomes an **INDEPENDENT** Country, NOT a Vassal of the culturally dominant Country
-- The culturally dominant Country gains **NOTHING** for fighting the War (or minimal War Reparations at 100% Warscore)
+- When the Rebellion wins independence, it has **TWO INCONSISTENT OUTCOMES:**
+  1. **Becomes an INDEPENDENT Country**, NOT a Vassal of the culturally dominant Country
+  2. **Becomes a landless Secessionists Vassal** with no territory (only 1 unit of cavalry with 5 people) - effectively useless
+- The culturally dominant Country gains **ALMOST NOTHING** for fighting the War - only minimal War Reparations (314.82 to 350.72 ducats) even at 100% Warscore
 - The AI culturally dominant Country may not take any land even at 100% Warscore, only accepting War Reparations
+- **CRITICAL:** The entire secessionist concept falls apart for landless rebels - culturally dominant Countries fight major Wars between major powers (e.g., France vs Castile) for essentially nothing
 
 **VERIFIED EXAMPLES:**
 
@@ -191,24 +220,43 @@ When a Secessionists Rebellion spawns, its behavior differs dramatically based o
 - The AI may only accept War Reparations or white peace, leaving the Defender with all territory intact
 - This is inconsistent with land-based Rebellions where the culturally dominant Country gains a Vassal
 
+**Example 3 - Landless Rebel Behavior (France vs Castile - VERIFIED):**
+- Castile conquers Loudun (French culture territory)
+- French Secessionists Rebellion spawns as Society of Pops (<50% French culture population)
+- France (culturally dominant) is forcibly called to support the Rebellion
+- France fights Castile (two major powers in Europe) and achieves 100% Warscore
+- **Outcome 1:** The landless rebel (AAA00) becomes a **landless Secessionists Vassal** of France with no territory, only 1 unit of cavalry (5 people) - effectively useless
+- **Outcome 2:** The landless rebel becomes a **settled country** but **NOT a Secessionists Vassal** of France - completely independent
+- France gains only **314.82 to 350.72 ducats** (War Reparations) despite fighting an entire major War with 100% Warscore
+- France gains **NO TERRITORY** and either **NO USEFUL Vassal** (landless vassal with 5 people) or **NO Vassal AT ALL** (independent country)
+- **Summary:** Two major powers (France and Castile) fight a War for either: (1) a landless Secessionists Vassal with 1 unit of cavalry (5 people), (2) an independent settled country, or (3) 314.82 to 350.72 ducats. This demonstrates that the secessionist concept completely falls apart for landless rebels - there is almost no benefit to fighting in a secessionist War for a landless secessionist because the supposedly overlord France gains almost nothing, and the landless rebel does NOT become France's useful Vassal if it becomes settled
+
 **Why This Is Problematic:**
 - **Inconsistent outcomes:** Same mechanism produces different results based on population size
-- **No reward for culturally dominant Country:** Landless Rebellions provide no benefit to the culturally dominant Country that is forced to fight
+- **No meaningful reward for culturally dominant Country:** Landless Rebellions provide almost no benefit to the culturally dominant Country that is forced to fight - only minimal War Reparations (314-350 ducats) even at 100% Warscore
+- **Two problematic outcomes:** Landless rebels either become independent (no Vassal reward) or become useless landless Vassals with no territory (only 5 people in 1 unit)
+- **Major War for nothing:** Two major powers fight a War for essentially nothing - the culturally dominant Country gains almost no benefit despite winning with 100% Warscore
 - **AI suboptimal behavior:** AI may not take land even when it should, wasting Warscore
-- **Breaks intended design:** The Secessionists mechanism is supposed to reward culturally dominant Countries with Vassals, but landless Rebellions break this design
-- **Unfair to players:** Players who are forcibly called into landless Rebellion Wars gain nothing for their effort
+- **Breaks intended design:** The Secessionists mechanism is supposed to reward culturally dominant Countries with useful Vassals, but landless Rebellions completely break this design
+- **Unfair to players:** Players who are forcibly called into landless Rebellion Wars gain almost nothing for their effort
+- **Secessionist concept falls apart:** The entire secessionist concept becomes meaningless for landless rebels, as they can be independent or become useless landless Vassals
 
 **Technical Details:**
 - When Province has <50% population of rebelling culture, Rebellion spawns as `country_type = pop` (Society of Pops - landless with no territory)
-- When `country_type = pop` wins independence, it becomes an independent Country, not a Vassal
-- The `secessionists.txt` subject type definition does not have `ai_wants_to_be_overlord`, which may explain why AI doesn't try to make landless rebels into Vassals
+- When `country_type = pop` wins independence, it has inconsistent outcomes:
+  1. Becomes an independent Country (not a Vassal)
+  2. Becomes a landless Secessionists Vassal with no territory (only pops/units, effectively useless)
+- The `secessionists.txt` subject type definition does not have `ai_wants_to_be_overlord`, which may explain why AI doesn't try to make landless rebels into useful Vassals
 - The `PEACE_MAKE_SUBJECT_REVOLT_WAR = 0` define in `00_defines.txt` indicates AI has no interest in making subjects in revolt Wars, which explains suboptimal peace decisions
+- Even when landless rebels become Vassals, they have no territory and minimal military (e.g., 1 unit of cavalry with 5 people), making them effectively useless
 
 **Impact:**
-- Culturally dominant Countries gain nothing from supporting landless Rebellions
-- Players are forced to fight Wars with no reward
+- Culturally dominant Countries gain almost nothing from supporting landless Rebellions - only minimal War Reparations (314-350 ducats) even at 100% Warscore
+- Major powers fight major Wars for essentially nothing (e.g., France vs Castile for a landless Vassal with 5 people or an independent country)
+- Players are forced to fight Wars with almost no reward
 - AI makes suboptimal peace decisions, not taking land even at 100% Warscore
-- Breaks the intended design of the Secessionists mechanism where culturally dominant Countries should gain Vassals
+- Breaks the intended design of the Secessionists mechanism where culturally dominant Countries should gain useful Vassals
+- The entire secessionist concept becomes meaningless for landless rebels, as they either become independent or useless landless Vassals
 
 ---
 
@@ -288,6 +336,7 @@ The Secessionists mechanism creates a severe exploit that allows knowledgeable p
 These issues are critical because:
 - Players have absolutely no control over being dragged into Wars
 - **Original owners are completely ignored** - The system ignores original ownership and only looks at cultural dominance (e.g., Ottomans ignored in favor of Eretnids in Byzantium case)
+- **Inconsistent War leadership logic** - In normal War declarations, Overlords become War Leader when their Vassals are attacked, but in Secessionists Civil Wars, Vassals become War Leader instead. This creates unpredictable and inconsistent game logic that breaks player expectations
 - Personal Union break unexpectedly due to forced participation
 - Players receive severe penalties (-50 Stability) for actions they did not choose
 - **Rebellions that spawn as Society of Pops cause warscore costs to be applied to wrong target** - When Society of Pops troops are wiped out and Rebellion is eliminated, the War continues with the war participant Country as War Leader. The low warscore costs (intended only for annexing Rebels) remain active, allowing the Defender to annex the war participant Country at 25% cost instead of just the Rebels. This allows major powers like France (3rd largest Country at game start) to be annexed by smaller Countries like England
@@ -299,7 +348,7 @@ These issues are critical because:
 - **EXPLOIT 2:** Players can attack opponents (AI or human) during a Truce period by intentionally creating a Truce period through War 2, then triggering Secessionists Rebellion which forces the victim to join and receive -50 Stability penalties, preventing the victim from calling Allies. This completely breaks game balance in both single-player and multiplayer contexts
 - **WORLD War ESCALATION:** A single local Rebellion can escalate into a world War due to asymmetric Alliance calling. The Defender can call all Allies, while forcibly called Attacker cannot call its own Allies, creating a dangerous escalation mechanism
 - **SMALL SUBJECTS DRAGGED INTO DISTANT Wars:** Any subject (e.g., Vassal, Secessionists subject) that happens to be culturally dominant is forcibly called to support distant rebellions of the same culture, even when thousands of kilometers away. Players lose control over their subjects' foreign policy and must investigate to find out why their subjects are at War (VERIFIED: Yuán case - small Mongolian subject in Mongolia region forced to support rebellion in Georgia 6000+ km away)
-- **INCONSISTENT BEHAVIOR OF LAND-BASED VS. LANDLESS Secessionists:** Land-based Secessionists Rebellions (>50% cultural population) become Vassals of the culturally dominant Country when they win, while landless Secessionists Rebellions (<50% cultural population - Society of Pops) become independent Countries with no reward for the culturally dominant Country. This creates inconsistent outcomes where culturally dominant Countries gain nothing from fighting landless Rebellion Wars, and AI may not take land even at 100% Warscore (VERIFIED: England vs France case - France fought entire War and gained only minimal War Reparations, no territory or Vassal)
+- **INCONSISTENT BEHAVIOR OF LAND-BASED VS. LANDLESS Secessionists:** Land-based Secessionists Rebellions (>50% cultural population) become Vassals of the culturally dominant Country when they win, while landless Secessionists Rebellions (<50% cultural population - Society of Pops) have inconsistent outcomes: either become independent Countries or useless landless Vassals (e.g., 1 unit of cavalry with 5 people). This creates inconsistent outcomes where culturally dominant Countries gain almost nothing from fighting landless Rebellion Wars (only 314-350 ducats even at 100% Warscore), and the entire secessionist concept falls apart for landless rebels. Major powers fight major Wars for essentially nothing (VERIFIED: France vs Castile case - France fought entire War with 100% Warscore and gained only 314.82 to 350.72 ducats, no territory or useful Vassal; landless rebel either became independent or useless landless Vassal with 5 people)
 
 ---
 
@@ -468,6 +517,52 @@ Load the France save files. The saves are set up with:
 6. Result: France can bypass the Coalition to attack Castile alone, while Castile cannot obtain Coalition or ally support
 7. Observe that Castile will leave the Coalition after the rebellion War ends
 
+### CASE 6: France vs Castile LANDLESS REBEL BEHAVIOR (Demonstrates Issue 12 - VERIFIED)
+
+Save File ID: **#39d23961**
+
+Load the France vs Castile landless rebel save files. The saves demonstrate:
+- Castile has conquered Loudun (French culture territory)
+- French Secessionists Rebellion spawns as Society of Pops (<50% French culture population)
+- France (culturally dominant) is forcibly called to support the Rebellion
+
+**Steps to observe Issue 12** (Landless Rebel Behavior):
+
+1. Load save 1337.5.1 - Castile Conquer Loudun, add revolt 100%
+   - Play as Castile
+   - Console: `conquer loudun`
+   - Add rebel progress to 1 (100%)
+2. Load save 1337.6.1 - France Join Secessionist War, Occupy Castile, 1 - No Land Transferred to AAA00
+   - Play as France
+   - Console: `occupy_country CAS` to gain 100% Warscore
+   - Observe: No land is transferred to newly spawned tag AAA00 (a landless rebel)
+3. Load save 1337.6.1 - France Join Secessionist War, Occupy Castile, 2 - Loudun Transferred to AAA00
+   - Play as France
+   - Console: `occupy_country CAS` to gain 100% Warscore
+   - Observe: Loudun is transferred to newly spawned tag AAA00 (a landless rebel)
+4. Load save 1337.8.1 - France 1. Set Cash 0
+   - 2 months after save 2
+   - Set cash to 0 to check gained War Reparations
+5. Load save 1337.8.9 - France 1. Gain 350.72 War Reparation, AAA00 Becomes Landless Secessionist
+   - 9 days after save 2
+   - AAA00 makes peace with Castile
+   - Observe: France gained 350.72 ducats, and AAA00 is a landless Secessionists Vassal with 1 unit of cavalry (5 people)
+6. Load save 1337.8.1 - France 2. Set Cash 0
+   - 2 months after save 3
+   - Set cash to 0 to check gained War Reparations
+7. Load save 1337.8.11 - France 2. Gain 350.72 War Reparation, AAA00 Becomes Landless Secessionist
+   - 11 days after save 2
+   - AAA00 made peace with Castile
+   - Observe: France gained 314.82 ducats, and AAA00 is now a settled country but **NOT a Secessionists Vassal** of France
+
+**CRITICAL OBSERVATIONS:**
+- Two major powers (France and Castile) fight a War for essentially nothing
+- Best case scenario with 100% Warscore: France gains only 314.82 to 350.72 ducats (War Reparations)
+- The landless rebel (AAA00) either:
+  1. Becomes a landless Secessionists Vassal with 1 unit of cavalry (5 people) - effectively useless
+  2. Becomes a settled country but **NOT a Secessionists Vassal** of France - completely independent
+- This demonstrates that the secessionist concept completely falls apart for landless rebels - there is almost no benefit to fighting in a secessionist War for a landless secessionist because the supposedly overlord France gains almost nothing, and the landless rebel does NOT become France's useful Vassal if it becomes settled
+
 ---
 
 ## Game Saves Provided
@@ -507,6 +602,16 @@ Save File ID: **#75e13d1**
 - 1338.4.1 - France Truce with Castile, Add Castilian Rebel to 100%
 - 1346.8.2 - France Castile Joint Coalition, Add Castilian Rebel to 100%
 - Additional saves demonstrating various scenarios
+
+**France vs Castile Landless Rebel Saves** (Issue 12 - VERIFIED):
+Save File ID: **#39d23961**
+- 1337.5.1 - Castile Conquer Loudun, add revolt 100%
+- 1337.6.1 - France Join Secessionist War, Occupy Castile, 1 - No Land Transferred to AAA00
+- 1337.6.1 - France Join Secessionist War, Occupy Castile, 2 - Loudun Transferred to AAA00
+- 1337.8.1 - France 1. Set Cash 0
+- 1337.8.9 - France 1. Gain 350.72 War Reparation, AAA00 Becomes Landless Secessionist
+- 1337.8.1 - France 2. Set Cash 0
+- 1337.8.11 - France 2. Gain 350.72 War Reparation, AAA00 Becomes Landless Secessionist
 
 ---
 
