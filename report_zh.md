@@ -550,7 +550,7 @@ Load the 法兰西 vs 卡斯蒂利亚 landless rebel save files. The saves demon
 6. Load save 1337.8.1 - 法兰西 2. Set Cash 0
    - 2 months after save 3
    - Set cash to 0 to check gained 战争赔款
-7. Load save 1337.8.11 - 法兰西 2. Gain 350.72 War Reparation, AAA00 Becomes Landless Secessionist
+7. Load save 1337.8.11 - 法兰西 2. Gain 350.72 War Reparation, AAA00 Becomes landed INDEPENDENT
    - 11 days after save 2
    - AAA00 made peace with 卡斯蒂利亚
    - Observe: 法兰西 gained 314.82 ducats, and AAA00 is now a settled country but **NOT a 归并国附庸** of 法兰西

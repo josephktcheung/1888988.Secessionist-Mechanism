@@ -550,7 +550,7 @@ Load the France vs Castile landless rebel save files. The saves demonstrate:
 6. Load save 1337.8.1 - France 2. Set Cash 0
    - 2 months after save 3
    - Set cash to 0 to check gained War Reparations
-7. Load save 1337.8.11 - France 2. Gain 350.72 War Reparation, AAA00 Becomes Landless Secessionist
+7. Load save 1337.8.11 - France 2. Gain 350.72 War Reparation, AAA00 Becomes landed INDEPENDENT
    - 11 days after save 2
    - AAA00 made peace with Castile
    - Observe: France gained 314.82 ducats, and AAA00 is now a settled country but **NOT a Secessionists Vassal** of France
