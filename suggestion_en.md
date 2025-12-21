@@ -81,31 +81,6 @@ The secessionist system creates an asymmetric bypass of traditional diplomacy:
 
 5. **Exploitable Nature:** The system enables systematic exploits where players can force opponents into wars during Truce periods, bypass Coalition restrictions, and use Overlords as weapons.
 
-### Historical and Strategic Justification Problem
-
-The current forced participation system contradicts historical reality and strategic decision-making:
-
-**Historical Context (1337 Start Date):**
-- Nationalism and cultural unification were **not** strong motivations in the 14th century
-- Countries prioritized dynastic interests, territorial expansion, and economic benefits over cultural solidarity
-- The forced participation mechanism assumes modern nationalist motivations that didn't exist in the game's time period
-- In 1337, a country would not automatically go to war to support a small cultural minority in foreign territory unless there was clear strategic or economic benefit
-
-**Cost-Benefit Analysis:**
-- Even if culturally dominant countries might sympathize with secessionists, they would not automatically join wars unless the benefit justifies the cost
-- Countries prioritize the collective benefit of the whole nation over a relatively small size of same-culture citizens living in a foreign country
-- States would evaluate: (1) Expected Vassal size and value, (2) Potential War costs (manpower, Ducats, War Exhaustion), (3) Risk of escalation (defender's Allies, Coalition members), (4) Opportunity cost of committing resources to a potentially long War for minimal gain
-
-**War Duration Risk:**
-- Secessionist wars can drag on for years with minimal benefits, making forced participation even less justified
-- Late-game complexity: Great powers with presence in multiple continents make secessionist Wars risky and hard to justify, even for large Vassals
-- The current system forces countries to fight wars they would rationally refuse based on cost-benefit analysis
-
-**Strategic Rationality:**
-- The current system breaks strategic decision-making by forcing participation without allowing cost-benefit evaluation
-- Players cannot make informed decisions about whether participation is worthwhile
-- This violates both historical realism and strategic gameplay principles
-
 ### Strategic Decision-Making Problems
 
 **Landless Rebels Provide Almost No Benefit:**
