@@ -273,6 +273,13 @@ The redesigned system must integrate with existing EU5 mechanics:
 
 While a complete redesign is recommended, the following essential quick fixes can address the most critical exploits without requiring a full system redesign:
 
+**Moddability Assessment:**
+- **Core secessionist calling mechanism** (automatic same-culture country calling when rebels reach 100%) is **NOT moddable** - it's hardcoded in the engine (C++ code), not in script files
+- **`on_civil_war_start` event** (`game/in_game/common/on_action/_hardcoded.txt`) is moddable but fires AFTER the war starts, so it can only remove countries post-facto, not prevent the initial call
+- **Subject type properties** (`game/in_game/common/subject_types/secessionists.txt`) are moddable but only affect subject behavior, not the calling mechanism
+- **Workarounds possible:** Some fixes can be implemented via `on_civil_war_start` to remove invalid participants, but this is a workaround, not a true prevention
+- **Engine changes required:** Most hotfixes require engine code modifications to the secessionist calling mechanism itself
+
 ### Hotfix 1: Fix $WAR_LATERALVIEW_ANNEX_REVOLTER$ Button Exploit (Issue 10 - CRITICAL)
 
 **Problem:** The $WAR_LATERALVIEW_ANNEX_REVOLTER$ button can be used to annex war participant $game_concept_countries$ (e.g., $FRA$) instead of only actual $game_concept_revolter$ $game_concept_countries$, allowing major powers to be annexed at 25% cost with no $game_concept_antagonism$.
@@ -283,6 +290,18 @@ While a complete redesign is recommended, the following essential quick fixes ca
 - Disable the option for war participant $game_concept_countries$ that are not actual revolters
 
 **Alternative Fix:** If Annex Revolter is used on a non-revolter, apply normal annexation costs (100% instead of 25%) and generate appropriate $game_concept_antagonism$.
+
+**Implementation Location:**
+- **File:** Engine code (C++ validation logic) - **NOT moddable via scripts**
+- **Workaround (Moddable):** `game/in_game/common/on_action/_hardcoded.txt` (`on_civil_war_start`) can add validation, but cannot prevent button from appearing
+- **Code Example (Engine Code):**
+```cpp
+// In Annex Revolter button validation (engine code)
+if (target_country.is_war_participant() && !target_country.is_original_revolter()) {
+    // Disable button or apply normal annexation costs
+    return false; // or apply_normal_annexation_costs()
+}
+```
 
 **Impact:** Prevents game-breaking exploit where major powers can be annexed at minimal cost.
 
@@ -295,6 +314,19 @@ While a complete redesign is recommended, the following essential quick fixes ca
 - If landless, use standard rebel mechanics instead of secessionist $game_concept_civil_war$ mechanism
 - Do not create secessionist $game_concept_civil_war$ for landless rebels
 
+**Implementation Location:**
+- **File:** Engine code (rebel creation mechanism) - **NOT moddable via scripts**
+- **Workaround (Moddable):** `game/in_game/common/on_action/_hardcoded.txt` (`on_civil_war_start`) can detect landless rebels and end war early, but cannot prevent war creation
+- **Code Example (Engine Code):**
+```cpp
+// In secessionist rebel creation logic (engine code)
+if (rebel_type == secessionist && would_spawn_as_country_type == pop) {
+    // Use standard rebel mechanics instead
+    create_standard_rebel_war();
+    return; // Skip secessionist civil war creation
+}
+```
+
 **Impact:** Prevents wars for minimal benefit and eliminates the root cause of the Annex Revolter exploit.
 
 ### Hotfix 3: Exclude Subjects from Secessionist Calls (Issue 11)
@@ -304,6 +336,19 @@ While a complete redesign is recommended, the following essential quick fixes ca
 **Quick Fix:** Exclude all subjects from secessionist calls:
 - Add check in secessionist calling mechanism: `is_subject = no`
 - This should be consistent with how $vassal$s and $fiefdom$s are already excluded (verified in Issue 2 testing)
+
+**Implementation Location:**
+- **File:** Engine code (secessionist calling mechanism) - **NOT moddable via scripts**
+- **Workaround (Moddable):** `game/in_game/common/on_action/_hardcoded.txt` (`on_civil_war_start`) can remove subjects from war, but cannot prevent initial call
+- **Code Example (Engine Code):**
+```cpp
+// In secessionist calling logic - filter eligible countries (engine code)
+eligible_countries = filter_countries({
+    same_culture = yes,
+    is_subject = no,  // Add this check
+    // ... other conditions
+});
+```
 
 **Impact:** Prevents subjects from being dragged into distant $game_concept_wars$ and prevents conflicts with $game_concept_overlords$.
 
@@ -315,6 +360,20 @@ While a complete redesign is recommended, the following essential quick fixes ca
 - Add check: `NOT = { is_subject_of_type = subject_type:personal_union }` or similar
 - Ensure consistency with other subject type exclusions
 
+**Implementation Location:**
+- **File:** Engine code (secessionist calling mechanism) - **NOT moddable via scripts**
+- **Workaround (Moddable):** `game/in_game/common/on_action/_hardcoded.txt` (`on_civil_war_start`) can remove personal union partners from war, but cannot prevent initial call
+- **Code Example (Engine Code):**
+```cpp
+// In secessionist calling logic - filter eligible countries (engine code)
+eligible_countries = filter_countries({
+    same_culture = yes,
+    is_subject = no,
+    NOT = { is_subject_of_type = subject_type:personal_union },  // Add this check
+    // ... other conditions
+});
+```
+
 **Impact:** Prevents $game_concept_personal_union$ from breaking unexpectedly.
 
 ### Hotfix 5: Fix $game_concept_truce$ Breaking Penalties (Issue 8)
@@ -325,6 +384,26 @@ While a complete redesign is recommended, the following essential quick fixes ca
 - Add check in secessionist calling mechanism: `NOT = { has_truce_with = $defender$ }`
 - If no eligible $game_concept_country$ exists (all have $game_concept_truce$s), the $secessionists$ $game_concept_rebellion$ proceeds without external support
 - This prevents the exploit entirely and avoids unfair penalties for countries that had no choice
+
+**Implementation Location:**
+- **File:** Engine code (secessionist calling mechanism) - **NOT moddable via scripts**
+- **Workaround (Moddable):** `game/in_game/common/on_action/_hardcoded.txt` (`on_civil_war_start`) can remove countries with truces from war, but cannot prevent initial call or truce breaking penalties
+- **Code Example (Engine Code):**
+```cpp
+// In secessionist calling logic - filter eligible countries (engine code)
+eligible_countries = filter_countries({
+    same_culture = yes,
+    is_subject = no,
+    NOT = { has_truce_with = defender },  // Add this check
+    // ... other conditions
+});
+
+// If no eligible country exists, proceed without external support
+if (eligible_countries.empty()) {
+    create_civil_war_without_external_support();
+    return;
+}
+```
 
 **Impact:** Prevents unfair penalties for countries that had no choice and prevents exploit where players can force opponents into $game_concept_wars$ during $game_concept_truce$ periods.
 
