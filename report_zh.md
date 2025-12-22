@@ -1,14 +1,14 @@
-# Bug Report: 归并国 Mechanism
+# Bug 报告：归并国机制
 
-## Metadata
+## 元数据
 
-**Title:** 归并国 Mechanism - Forced Participation, Original Owner Ignored, World War Escalation, and Exploits
+**标题：** 归并国机制 - 强制参与、忽略原始所有者、世界大战升级和利用
 
-**Issue Type:** Gameplay
+**问题类型：** 游戏玩法
 
-**Bug Type:** AI (non-player characters), Other
+**Bug 类型：** AI（非玩家角色）、其他
 
-**Game Version:** 1.0.10
+**游戏版本：** 1.0.10
 
 ---
 
@@ -46,11 +46,11 @@
 
 **验证：** 已用法兰西（邦联主导国）和西西里（邦联从属国）测试。当西西里归并国叛军在法兰西控制的领土上爆发时，西西里被强制召唤，立即破坏了联合统治。当西西里是附庸或采邑时，它被正确排除。
 
-### Issue 3: 附庸战争 Leadership Problem (Severe)
+### Issue 3: 附庸战争领导权问题（严重）
 
 如果玩家创建的附庸在内战中成为防御方，玩家会被强制拖入战争但不会成为战争领袖。AI 附庸控制所有和平谈判。玩家无法召唤同盟，无法获得军事通行权，并且必须在没有控制权的情况下承担所有战争成本。
 
-**CRITICAL INCONSISTENCY: Normal 战争 Declaration vs. 归并国内战**
+**关键不一致性：正常战争宣战 vs. 归并国内战**
 
 在正常战争宣战和归并国内战之间，关于附庸战争领导权的游戏逻辑存在根本性不一致：
 
@@ -70,11 +70,11 @@
 - 这创造了不一致的游戏逻辑，相同的（宗主国-附庸）关系根据战争开始方式产生不同的战争领导权结果
 - 玩家无法仅根据关系结构预测或理解哪一方将控制战争
 
-**Impact:**
-- Creates confusion for players who expect consistent behavior
-- Makes it impossible to predict 战争 leadership based on subject relationships
-- Breaks game logic consistency between different 战争 types
-- In 归并国内战s, 宗主国 lose control they would normally have in regular 战争
+**影响：**
+- 对期望一致行为的玩家造成困惑
+- 无法根据属国关系预测战争领导权
+- 破坏了不同战争类型之间的游戏逻辑一致性
+- 在归并国内战中，宗主国失去了在常规战争中通常拥有的控制权
 
 ### Issue 4: 同盟自动召唤的不一致性
 
@@ -84,9 +84,9 @@
 
 当被强制召唤的国家处于包围网中时，它无法召唤包围网成员加入战争，因为它是进攻方。这允许防御方绕过包围网限制，单独攻击包围网成员。
 
-### Issue 6: AI 附庸 Suboptimal Peace Decisions
+### Issue 6: AI 附庸次优和平决策
 
-AI 附庸 may choose white peace instead of annexing the 叛乱者 even when annexation cost is very low, causing players to lose territories they should have gained.
+AI 附庸可能选择白和平而不是吞并叛乱者，即使吞并成本非常低，导致玩家失去本应获得的领土。
 
 ### Issue 7: 宗主国被迫加入
 
@@ -557,10 +557,10 @@ AI 附庸 may choose white peace instead of annexing the 叛乱者 even when ann
 
 **关键观察：**
 - 两个主要强国（法兰西和卡斯蒂利亚）为基本上没有价值的东西而战斗
-- Best case scenario with 100% 战争分数: 法兰西 gains only 314.82 to 350.72 ducats (战争赔款)
-- The landless rebel (AAA00) either:
-  1. Becomes a landless 归并国附庸 with 1 unit of cavalry (5 people) - effectively useless
-  2. Becomes a settled country but **NOT a 归并国附庸** of 法兰西 - completely independent
+- 在 100% 战争分数的最佳情况下：法兰西只获得 314.82 到 350.72 杜卡特（战争赔款）
+- 无地叛军（AAA00）要么：
+  1. 成为只有 1 个骑兵单位（5 人）的无地归并国附庸 - 实际上无用
+  2. 成为定居国家，但不是法兰西的归并国附庸 - 完全独立
 - 这证明归并国概念对无地叛军完全失效 - 对于无地归并国来说，在归并国战争中战斗几乎没有好处，因为所谓的宗主国法兰西几乎一无所获，如果无地叛军成为定居国家，它不会成为法兰西的有用附庸
 
 ---
@@ -615,17 +615,17 @@ AI 附庸 may choose white peace instead of annexing the 叛乱者 even when ann
 
 ---
 
-## Relevant Files
+## 相关文件
 
 - `game/in_game/common/subject_types/secessionists.txt` (lines 12-17: `join_offensive_wars_always`, `join_defensive_wars_always`)
 - `game/in_game/common/subject_types/vassal.txt`
 - `game/in_game/common/scripted_relations/alliance.txt` (lines 13-14: `called_in_defensively`, `called_in_offensively`)
 - `game/in_game/common/scripted_relations/union_of_crowns_pact.txt` (line 10: `break_on_war = yes`)
-- `game/in_game/common/on_action/_hardcoded.txt` (line 717-777: `on_civil_war_start` - hardcoded mechanism for calling same-culture countries)
+- `game/in_game/common/on_action/_hardcoded.txt` (line 717-777: `on_civil_war_start` - 用于召唤同文化国家的硬编码机制)
 - `game/in_game/common/scripted_effects/global_effects.txt` (line 218: `start_civil_war`)
 - `game/in_game/common/prices/00_hardcoded.txt` (lines 100-103: `war_breaking_truce` - stability = 50, war_exhaustion = 1)
 - `game/in_game/common/biases/05_antagonism_hardcoded.txt` (lines 35-38: `antagonism_breaking_truce` - value = 25)
-- `game/in_game/common/wargoals/00_default.txt` (lines 89-99: `take_country_nationalist` - `type = take_country`, `conquer_cost = 0.25`, `subjugate_cost = 0.25` - low warscore costs for 归并国战争, intended for annexing 叛军s but exploitable when war participant 国家 becomes 战争领袖 due to Issue 10. The `type = take_country` allows annexing the entire 国家 via 吞并叛军 button)
-- `game/main_menu/localization/english/war_overview_l_english.yml` (line 8: `WAR_LATERALVIEW_ANNEX_REVOLTER: "Annex Revolter"` - peace option that allows annexing revolter countries)
-- `game/main_menu/localization/english/diplomacy_l_english.yml` (lines 1149-1150: `PEACE_TREATY_ANNEX_REVOLTER` - peace treaty description for annexing revolters)
-- `game/loading_screen/common/defines/00_defines.txt` (line 1673: `MIN_WARSCORE_TO_DEMAND = 10` - minimum war score required to enable peace options like 吞并叛军; lines 1832-1833: `PEACE_TREATY_ANNEX_REVOLTER_MAX_COST = 70`, `PEACE_TREATY_REVOLTER_SURVIVES_MAX_COST = 70`)
+- `game/in_game/common/wargoals/00_default.txt` (lines 89-99: `take_country_nationalist` - `type = take_country`, `conquer_cost = 0.25`, `subjugate_cost = 0.25` - 归并国战争的低战争分数成本，用于吞并叛军，但当参战国因问题 10 成为战争领袖时可被利用。`type = take_country` 允许通过吞并叛军按钮吞并整个国家)
+- `game/main_menu/localization/english/war_overview_l_english.yml` (line 8: `WAR_LATERALVIEW_ANNEX_REVOLTER: "Annex Revolter"` - 允许吞并叛军国家的和平选项)
+- `game/main_menu/localization/english/diplomacy_l_english.yml` (lines 1149-1150: `PEACE_TREATY_ANNEX_REVOLTER` - 吞并叛军的和平条约描述)
+- `game/loading_screen/common/defines/00_defines.txt` (line 1673: `MIN_WARSCORE_TO_DEMAND = 10` - 启用吞并叛军等和平选项所需的最低战争分数；lines 1832-1833: `PEACE_TREATY_ANNEX_REVOLTER_MAX_COST = 70`, `PEACE_TREATY_REVOLTER_SURVIVES_MAX_COST = 70`)
