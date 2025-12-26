@@ -357,6 +357,34 @@ The $secessionists$ mechanism creates a severe exploit that allows knowledgeable
 - Player calls $ARA$ and $PAP$, attacks Opponent again with overwhelming advantage
 - Opponent's $game_concept_country$ collapses due to $game_concept_stability$ penalty and cannot effectively defend
 
+### EXPLOIT 3: $WAR_LATERALVIEW_ANNEX_REVOLTER$ BUTTON - ANNEXING MAJOR POWERS AT 0 COST (GAME-BREAKING - VERIFIED)
+
+The $WAR_LATERALVIEW_ANNEX_REVOLTER$ button, designed to annex $secessionists$ $game_concept_rebels$, can be misapplied to annex entire major war participant $game_concept_countries$ at effectively 0 cost with no $game_concept_antagonism$ generated.
+
+**Exploitation Strategy** (VERIFIED - $ENG$ vs $FRA$ and $TUR$ vs $JAL$):
+
+1. Player acquires territories with a culture that has low population (<50% of location population) matching a major power's primary culture
+2. Player intentionally allows or encourages $secessionists$ $game_concept_rebellion$ to develop in these territories
+3. When the $game_concept_rebellion$ spawns, it becomes a $game_concept_society_of_pops$ (landless with no territory) due to low population
+4. The culturally dominant major power (e.g., $FRA$ for French culture, $JAL$ for Iraqi culture) is FORCED to join the $game_concept_rebellion$'s side ($game_concept_attacker$) (Issue 1)
+5. Player ($game_concept_defender$) wipes out the $game_concept_society_of_pops$ troops, eliminating the $game_concept_rebellion$
+6. The $game_concept_war$ continues because the major power is still in the $game_concept_war$
+7. The major power becomes the $game_concept_war_leader$ (only remaining $game_concept_attacker$)
+8. Player gains $game_concept_war_score$ through ticking $game_concept_war_score$ and military actions
+9. Player reaches 10 $game_concept_war_score$ (minimum required) - The $WAR_LATERALVIEW_ANNEX_REVOLTER$ button becomes enabled
+10. Player uses $WAR_LATERALVIEW_ANNEX_REVOLTER$ button to annex the entire major power at effectively 0 cost (base 25% cost reduced by -95% from `PEACE_COST_MODIFIER_FOR_REVOLT_WAR` modifier)
+11. No $game_concept_antagonism$ is generated despite annexing a major power
+
+**VERIFICATION:**
+- **VERIFIED EXAMPLE 1:** $FRA$ was annexed by $ENG$ through this mechanism - $ENG$ spawned a $game_concept_rebellion$ that became a $game_concept_society_of_pops$, $FRA$ was forcibly called, $ENG$ eliminated $game_concept_rebels$, gained 10 $game_concept_war_score$ (minimum required), then used $WAR_LATERALVIEW_ANNEX_REVOLTER$ button to annex entire $FRA$, and no $game_concept_antagonism$ was generated
+- **VERIFIED EXAMPLE 2:** $JAL$ was annexed by $TUR$ through this mechanism - $TUR$ had very few Iraqi culture pops in Gumushane location (only 31 Iraqi culture nobles rebelling, <50% of location population), spawning a $game_concept_rebellion$ that became a $game_concept_society_of_pops$ with only 3 soldiers. Because it was an Iraqi culture rebellion, $JAL$ (Iraqi culture dominant $game_concept_country$) was forcibly called. $TUR$ eliminated the 3 soldiers ($game_concept_society_of_pops$ disappeared), $JAL$ became $game_concept_war_leader$, $TUR$ gained 10% $game_concept_war_score$ by sieging a few forts, then used $WAR_LATERALVIEW_ANNEX_REVOLTER$ button to annex entire $JAL$. The annexed land was unintegrated territory requiring manual coring
+
+**Impact:**
+- **GAME-BREAKING:** Major powers like $FRA$ (3rd largest $game_concept_country$ at game start) can be annexed by smaller $game_concept_countries$ like $ENG$ through this exploit
+- No $game_concept_antagonism$ is generated when annexing major powers, breaking game balance
+- Effectively 0 cost annexation of major powers (intended only for small $game_concept_rebels$)
+- Completely breaks intended gameplay balance
+
 ---
 
 ## Severity
@@ -374,6 +402,7 @@ These issues are critical because:
 - Inconsistency: $game_concept_personal_union$ are treated differently from other subject types ($vassal$, $fiefdom$ are protected, $game_concept_personal_union$ are not)
 - **EXPLOIT 1:** $vassal$ players can use their $game_concept_overlords$ as weapons to attack same-culture $game_concept_countries$ and eventually declare independence, breaking intended gameplay balance
 - **EXPLOIT 2:** Players can attack opponents (AI or human) during a $game_concept_truce$ period by intentionally creating a $game_concept_truce$ period through War 2, then triggering $secessionists$ $game_concept_rebellion$ which forces the victim to join and receive -50 $game_concept_stability$ penalties, preventing the victim from calling $game_concept_allies$. This completely breaks game balance in both single-player and multiplayer contexts
+- **EXPLOIT 3:** Players can annex major powers (e.g., $FRA$, $JAL$) at effectively 0 cost using the $WAR_LATERALVIEW_ANNEX_REVOLTER$ button by spawning landless $secessionists$ $game_concept_rebellions$ ($game_concept_society_of_pops$), eliminating the $game_concept_rebel$, then using the button on the war participant major power instead of the eliminated $game_concept_rebel$. No $game_concept_antagonism$ is generated despite annexing major powers (GAME-BREAKING - VERIFIED)
 - **WORLD $game_concept_war$ ESCALATION:** A single local $game_concept_rebellion$ can escalate into a world $game_concept_war$ due to asymmetric $game_concept_alliance$ calling. The $game_concept_defender$ can call all $game_concept_allies$, while forcibly called $game_concept_attacker$ cannot call its own $game_concept_allies$, creating a dangerous escalation mechanism
 - **SMALL SUBJECTS DRAGGED INTO DISTANT $game_concept_wars$:** Any subject (e.g., $vassal$, $secessionists$ subject) that happens to be culturally dominant is forcibly called to support distant rebellions of the same culture, even when thousands of kilometers away. Players lose control over their subjects' foreign policy and must investigate to find out why their subjects are at $game_concept_war$ (VERIFIED: $YUA$ case - small Mongolian subject in Mongolia region forced to support rebellion in Georgia 6000+ km away)
 - **INCONSISTENT BEHAVIOR OF LAND-BASED VS. LANDLESS $secessionists$:** Land-based $secessionists$ $game_concept_rebellions$ (>50% cultural population) become $vassal$s of the culturally dominant $game_concept_country$ when they win, while landless $secessionists$ $game_concept_rebellions$ (<50% cultural population - $game_concept_society_of_pops$) have inconsistent outcomes: either become independent $game_concept_countries$ or useless landless $vassal$s (e.g., 1 unit of cavalry with 5 people). This creates inconsistent outcomes where culturally dominant $game_concept_countries$ gain almost nothing from fighting landless $game_concept_rebellion$ $game_concept_wars$ (only 314-350 ducats even at 100% $game_concept_war_score$), and the entire secessionist concept falls apart for landless rebels. Major powers fight major $game_concept_wars$ for essentially nothing (VERIFIED: $FRA$ vs $CAS$ case - $FRA$ fought entire $game_concept_war$ with 100% $game_concept_war_score$ and gained only 314.82 to 350.72 ducats, no territory or useful $vassal$; landless rebel either became independent or useless landless $vassal$ with 5 people)
@@ -382,7 +411,7 @@ These issues are critical because:
 
 ## Recommended Priority
 
-Issues 1, 2, and 5 should be prioritized as they have the most severe impact on gameplay experience and players have absolutely no control over them. Issue 2 ($game_concept_personal_union$ Breaking) is particularly severe because it creates an inconsistency where one subject type ($game_concept_personal_union$) is vulnerable while some others ($vassal$, $fiefdom$) are protected. The exploitation scenarios (Exploit 1 and Exploit 2) make this even more critical, as they completely break game balance in both single-player and multiplayer contexts, making games uncompetitive and unplayable for victims. Further testing is needed to determine if other subject types ($tributary$, $dominion$, $march$, $appanage$, etc.) are also affected.
+Issues 1, 2, 5, and 10 should be prioritized as they have the most severe impact on gameplay experience and players have absolutely no control over them. Issue 2 ($game_concept_personal_union$ Breaking) is particularly severe because it creates an inconsistency where one subject type ($game_concept_personal_union$) is vulnerable while some others ($vassal$, $fiefdom$) are protected. Issue 10 ($WAR_LATERALVIEW_ANNEX_REVOLTER$ Button Misapplied) is GAME-BREAKING as it allows major powers to be annexed at 0 cost. The exploitation scenarios (Exploit 1, Exploit 2, and Exploit 3) make this even more critical, as they completely break game balance in both single-player and multiplayer contexts, making games uncompetitive and unplayable for victims. Further testing is needed to determine if other subject types ($tributary$, $dominion$, $march$, $appanage$, etc.) are also affected.
 
 ---
 

@@ -138,7 +138,7 @@ When a Secessionists Rebellion breaks out:
 - Polish Secessionists Rebellion breaks out in Russia-controlled territory
 - Poland (culturally dominant) is FORCED to join Rebellion's side (Attacker) - NO CHOICE
 - Russia (Defender) calls Austria and Prussia → 3 major powers vs Poland
-- Poland (Attacker) cannot call France, Ottomans, or Sweden (its own allies in Bloc B) → fights alone against 3 major powers
+- Poland (Attacker) cannot call France, Ottomans, or Sweden (its own Allies in Bloc B) → fights alone against 3 major powers
 
 This creates a dangerous escalation mechanism where the Defender can systematically use Secessionists Rebellions to attack their enemies' Alliance blocs asymmetrically.
 
@@ -357,6 +357,34 @@ The Secessionists mechanism creates a severe exploit that allows knowledgeable p
 - Player calls Aragon and Rome, attacks Opponent again with overwhelming advantage
 - Opponent's Country collapses due to Stability penalty and cannot effectively defend
 
+### EXPLOIT 3: Annex Revolter BUTTON - ANNEXING MAJOR POWERS AT 0 COST (GAME-BREAKING - VERIFIED)
+
+The Annex Revolter button, designed to annex Secessionists Rebels, can be misapplied to annex entire major war participant Countries at effectively 0 cost with no Antagonism generated.
+
+**Exploitation Strategy** (VERIFIED - England vs France and Ottomans vs Jalayirids):
+
+1. Player acquires territories with a culture that has low population (<50% of location population) matching a major power's primary culture
+2. Player intentionally allows or encourages Secessionists Rebellion to develop in these territories
+3. When the Rebellion spawns, it becomes a Society of Pops (landless with no territory) due to low population
+4. The culturally dominant major power (e.g., France for French culture, Jalayirids for Iraqi culture) is FORCED to join the Rebellion's side (Attacker) (Issue 1)
+5. Player (Defender) wipes out the Society of Pops troops, eliminating the Rebellion
+6. The War continues because the major power is still in the War
+7. The major power becomes the War Leader (only remaining Attacker)
+8. Player gains Warscore through ticking Warscore and military actions
+9. Player reaches 10 Warscore (minimum required) - The Annex Revolter button becomes enabled
+10. Player uses Annex Revolter button to annex the entire major power at effectively 0 cost (base 25% cost reduced by -95% from `PEACE_COST_MODIFIER_FOR_REVOLT_WAR` modifier)
+11. No Antagonism is generated despite annexing a major power
+
+**VERIFICATION:**
+- **VERIFIED EXAMPLE 1:** France was annexed by England through this mechanism - England spawned a Rebellion that became a Society of Pops, France was forcibly called, England eliminated Rebels, gained 10 Warscore (minimum required), then used Annex Revolter button to annex entire France, and no Antagonism was generated
+- **VERIFIED EXAMPLE 2:** Jalayirids was annexed by Ottomans through this mechanism - Ottomans had very few Iraqi culture pops in Gumushane location (only 31 Iraqi culture nobles rebelling, <50% of location population), spawning a Rebellion that became a Society of Pops with only 3 soldiers. Because it was an Iraqi culture rebellion, Jalayirids (Iraqi culture dominant Country) was forcibly called. Ottomans eliminated the 3 soldiers (Society of Pops disappeared), Jalayirids became War Leader, Ottomans gained 10% Warscore by sieging a few forts, then used Annex Revolter button to annex entire Jalayirids. The annexed land was unintegrated territory requiring manual coring
+
+**Impact:**
+- **GAME-BREAKING:** Major powers like France (3rd largest Country at game start) can be annexed by smaller Countries like England through this exploit
+- No Antagonism is generated when annexing major powers, breaking game balance
+- Effectively 0 cost annexation of major powers (intended only for small Rebels)
+- Completely breaks intended gameplay balance
+
 ---
 
 ## Severity
@@ -374,6 +402,7 @@ These issues are critical because:
 - Inconsistency: Personal Union are treated differently from other subject types (Vassal, Fiefdom are protected, Personal Union are not)
 - **EXPLOIT 1:** Vassal players can use their Overlords as weapons to attack same-culture Countries and eventually declare independence, breaking intended gameplay balance
 - **EXPLOIT 2:** Players can attack opponents (AI or human) during a Truce period by intentionally creating a Truce period through War 2, then triggering Secessionists Rebellion which forces the victim to join and receive -50 Stability penalties, preventing the victim from calling Allies. This completely breaks game balance in both single-player and multiplayer contexts
+- **EXPLOIT 3:** Players can annex major powers (e.g., France, Jalayirids) at effectively 0 cost using the Annex Revolter button by spawning landless Secessionists Rebellions (Society of Pops), eliminating the Rebel, then using the button on the war participant major power instead of the eliminated Rebel. No Antagonism is generated despite annexing major powers (GAME-BREAKING - VERIFIED)
 - **WORLD War ESCALATION:** A single local Rebellion can escalate into a world War due to asymmetric Alliance calling. The Defender can call all Allies, while forcibly called Attacker cannot call its own Allies, creating a dangerous escalation mechanism
 - **SMALL SUBJECTS DRAGGED INTO DISTANT Wars:** Any subject (e.g., Vassal, Secessionists subject) that happens to be culturally dominant is forcibly called to support distant rebellions of the same culture, even when thousands of kilometers away. Players lose control over their subjects' foreign policy and must investigate to find out why their subjects are at War (VERIFIED: Yuán case - small Mongolian subject in Mongolia region forced to support rebellion in Georgia 6000+ km away)
 - **INCONSISTENT BEHAVIOR OF LAND-BASED VS. LANDLESS Secessionists:** Land-based Secessionists Rebellions (>50% cultural population) become Vassals of the culturally dominant Country when they win, while landless Secessionists Rebellions (<50% cultural population - Society of Pops) have inconsistent outcomes: either become independent Countries or useless landless Vassals (e.g., 1 unit of cavalry with 5 people). This creates inconsistent outcomes where culturally dominant Countries gain almost nothing from fighting landless Rebellion Wars (only 314-350 ducats even at 100% Warscore), and the entire secessionist concept falls apart for landless rebels. Major powers fight major Wars for essentially nothing (VERIFIED: France vs Castile case - France fought entire War with 100% Warscore and gained only 314.82 to 350.72 ducats, no territory or useful Vassal; landless rebel either became independent or useless landless Vassal with 5 people)
@@ -382,7 +411,7 @@ These issues are critical because:
 
 ## Recommended Priority
 
-Issues 1, 2, and 5 should be prioritized as they have the most severe impact on gameplay experience and players have absolutely no control over them. Issue 2 (Personal Union Breaking) is particularly severe because it creates an inconsistency where one subject type (Personal Union) is vulnerable while some others (Vassal, Fiefdom) are protected. The exploitation scenarios (Exploit 1 and Exploit 2) make this even more critical, as they completely break game balance in both single-player and multiplayer contexts, making games uncompetitive and unplayable for victims. Further testing is needed to determine if other subject types (Tributary, Dominion, March, Appanage, etc.) are also affected.
+Issues 1, 2, 5, and 10 should be prioritized as they have the most severe impact on gameplay experience and players have absolutely no control over them. Issue 2 (Personal Union Breaking) is particularly severe because it creates an inconsistency where one subject type (Personal Union) is vulnerable while some others (Vassal, Fiefdom) are protected. Issue 10 (Annex Revolter Button Misapplied) is GAME-BREAKING as it allows major powers to be annexed at 0 cost. The exploitation scenarios (Exploit 1, Exploit 2, and Exploit 3) make this even more critical, as they completely break game balance in both single-player and multiplayer contexts, making games uncompetitive and unplayable for victims. Further testing is needed to determine if other subject types (Tributary, Dominion, March, Appanage, etc.) are also affected.
 
 ---
 

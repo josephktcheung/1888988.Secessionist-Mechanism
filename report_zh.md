@@ -12,47 +12,47 @@
 
 ---
 
-## 摘要
+## Summary
 
-归并国机制存在严重的设计缺陷，导致游戏破坏性利用。同文化国家在没有玩家控制的情况下被强制召唤参战，**完全忽略原始所有权**，优先考虑文化主导地位。该机制破坏联合统治，创造不一致的战争领导权逻辑（附庸在归并国内战中领导，与正常宣战中宗主国领导不同），在附庸领导战争时阻止玩家控制，错误地应用停战协议惩罚，并允许通过吞并叛军按钮吞并整个参战国（例如，法兰西）而不产生敌意。不对称的同盟召唤创造了危险的世界战争升级，防御方可以协调，而被强制召唤的进攻方无法协调。无地归并国叛乱（群众集会）产生不一致的结果，文化主导国家战斗后几乎一无所获，不像有地叛乱会成为附庸。这些缺陷使系统性利用成为可能：（1）附庸玩家可以使用宗主国作为武器攻击同文化国家（已验证）；（2）玩家可以在停战协议期间通过触发归并国叛乱来攻击对手，迫使受害者加入并受到-50稳定度惩罚。
+The 归并国 mechanism has critical design flaws that create game-breaking exploits. Same-culture 国家 are forcibly called to 战争 without player control, **completely ignoring original ownership** in favor of cultural dominance. The mechanism breaks 联合统治, creates inconsistent 战争 leadership logic where 附庸s lead 归并国内战s (unlike normal 战争 declarations where 宗主国 lead), prevents player control when 附庸s lead 战争, incorrectly applies 停战协议 penalties, and allows the 吞并叛军 button to annex entire war participant 国家 (e.g., 法兰西) with no 敌意. Asymmetric 同盟 calling creates dangerous world 战争 escalation where 防御方s can coordinate while forcibly called 进攻方s cannot. Landless 归并国叛乱 (群众集会) produce inconsistent outcomes where culturally dominant 国家 gain nothing for fighting, unlike land-based 叛乱 which become 附庸s. These flaws enable systematic exploits: (1) 附庸 players can use 宗主国 as weapons to attack same-culture 国家 (VERIFIED); (2) Players can attack opponents during 停战协议 periods by triggering 归并国叛乱 that force victims to join and receive -50 稳定度 penalties.
 
 ---
 
-## 描述
+## Description
 
-归并国机制存在十二个关键问题：
+The 归并国 mechanism has twelve critical issues:
 
 ### Issue 1: Same-Culture Countries Forced to Join (Most Severe)
 
 When 归并国叛军s, the system automatically searches for nearby same-culture 国家 and forcibly calls them to 战争 on the 叛军 side. Called 国家 cannot refuse. If they have a 停战协议 with the enemy, they are incorrectly judged as actively breaking the 停战协议, triggering severe penalties (-50 稳定度, +1 厌战度, +25 敌意). The selection mechanism is hardcoded in the engine and cannot be found in game files, making it impossible for players to predict which country will be called.
 
-**关键缺陷：完全忽略原始所有权**
+**CRITICAL FLAW: Original Ownership Completely Ignored**
 
-系统在选择要召唤的同文化国家时**完全忽略原始所有权**，优先考虑文化主导地位而非历史主张。
+The system **completely ignores original ownership** when selecting which same-culture 国家 to call, prioritizing cultural dominance over historical claims.
 
-*来自拜占庭存档的示例：* 土耳其归并国叛乱发生在原本由奥斯曼拥有的领土上。奥斯曼仍然存在，是原始所有者。然而，系统选择了埃雷特纳（文化主导的土耳其国家）而不是奥斯曼，完全忽略了奥斯曼。奥斯曼没有机会收回其前领土，尽管它们拥有最强的历史主张。
+*Example from 拜占庭 save:* Turkish 归并国叛乱 occurs in territories originally owned by 奥斯曼. 奥斯曼 still exist and are the original owner. However, the system selects 埃雷特纳 (culturally dominant Turkish 国家) instead, completely ignoring 奥斯曼. 奥斯曼 have no opportunity to reclaim their former territories, even though they have the strongest historical claim.
 
-### 问题 2：联合统治破裂（严重 - 已验证）
+### Issue 2: 联合统治 Breaking (Severe - VERIFIED)
 
 When a 联合统治邦联从属国 is the culturally dominant 国家 for a 归并国叛乱, it is forcibly called to support the 叛乱 against its 邦联主导国. This immediately breaks the 联合统治 because `union_of_crowns_pact` has `break_on_war = yes`.
 
-**验证状态：**
-- 联合统治：**已验证受影响**（已用法兰西-西西里测试）
-- 附庸：**已验证被排除**（已用法兰西-西西里测试）
-- 采邑：**已验证被排除**（已用法兰西-西西里测试）
-- 其他属国类型（朝贡国、自治领、卫戍国、封邑、三曼多、土司、乌奇贝伊等）：未测试
+**VERIFICATION STATUS:**
+- 联合统治: **VERIFIED AFFECTED** (tested with 法兰西-西西里)
+- 附庸: **VERIFIED EXCLUDED** (tested with 法兰西-西西里)
+- 采邑: **VERIFIED EXCLUDED** (tested with 法兰西-西西里)
+- Other subject types (朝贡国, 自治领, 卫戍国, 封邑, 三曼多, 土司, 乌奇贝伊, etc.): NOT TESTED
 
-这造成了不一致性，联合统治容易受到影响，而其他一些属国类型受到保护。
+This creates an inconsistency where 联合统治 are vulnerable while some other subject types are protected.
 
-**验证：** 已用法兰西（邦联主导国）和西西里（邦联从属国）测试。当西西里归并国叛军在法兰西控制的领土上爆发时，西西里被强制召唤，立即破坏了联合统治。当西西里是附庸或采邑时，它被正确排除。
+**VERIFICATION:** Tested with 法兰西 (邦联主导国) and 西西里 (邦联从属国). When Sicilian 归并国叛军s in 法兰西-controlled territory, 西西里 was forcibly called, immediately breaking the 联合统治. When 西西里 was a 附庸 or 采邑 instead, it was correctly excluded.
 
-### 问题 3：附庸战争领导权问题（严重）
+### Issue 3: 附庸战争 Leadership Problem (Severe)
 
-如果玩家创建的附庸在内战中成为防御方，玩家会被强制拖入战争但不会成为战争领袖。AI附庸控制所有和平谈判。玩家无法召唤同盟，无法获得军事通行权，并且必须在没有控制权的情况下承担所有战争成本。
+If a player creates a 附庸 that becomes the 防御方 in a 内战, the player is forcibly dragged into the 战争 but does not become the 战争领袖. The AI 附庸 controls all peace negotiations. The player cannot call 同盟, cannot obtain 军事通行权, and must bear all 战争 costs without control.
 
-**关键不一致性：正常战争宣战 vs. 归并国内战**
+**CRITICAL INCONSISTENCY: Normal 战争 Declaration vs. 归并国内战**
 
-在正常战争宣战和归并国内战之间，关于附庸战争领导权的游戏逻辑存在根本性不一致：
+There is a fundamental inconsistency in game logic regarding 附庸战争 leadership between normal 战争 declarations and 归并国内战s:
 
 **Normal 战争 Declaration (using 宣战理由 and 外交官):**
 - When a 国家 declares 战争 against a 附庸 (e.g., 拜占庭 declares 战争 against 阿尔巴尼亚 where 阿尔巴尼亚 is a 附庸 of 那不勒斯), the 宗主国 (那不勒斯) becomes the 战争领袖, NOT the 附庸 (阿尔巴尼亚)
@@ -62,46 +62,46 @@ When a 联合统治邦联从属国 is the culturally dominant 国家 for a 归�
 **归并国内战 (Issue 3):**
 - When a 附庸 becomes the 防御方 in a 归并国内战, the 附庸 becomes the 战争领袖, NOT the 宗主国
 - The 宗主国 is forcibly dragged into the 战争 but does not control peace negotiations
-- AI附庸控制所有和平谈判，而宗主国没有控制权
+- The AI 附庸 controls all peace negotiations, while the 宗主国 has no control
 
-**不一致性：**
-- **正常战争宣战：** 当附庸被攻击时，宗主国是战争领袖
-- **归并国内战：** 当附庸是防御方时，附庸是战争领袖
-- 这创造了不一致的游戏逻辑，相同的（宗主国-附庸）关系根据战争开始方式产生不同的战争领导权结果
-- 玩家无法仅根据关系结构预测或理解哪一方将控制战争
+**The Inconsistency:**
+- **Normal 战争 declarations:** 宗主国 is 战争领袖 when 附庸 is attacked
+- **归并国内战s:** 附庸 is 战争领袖 when 附庸 is 防御方
+- This creates inconsistent game logic where the same relationship (宗主国-附庸) produces different 战争 leadership outcomes depending on how the 战争 starts
+- Players cannot predict or understand which party will control the 战争 based on the relationship structure alone
 
-**影响：**
-- 对期望一致行为的玩家造成困惑
-- 无法根据属国关系预测战争领导权
-- 破坏了不同战争类型之间的游戏逻辑一致性
-- 在归并国内战中，宗主国失去了在常规战争中通常拥有的控制权
+**Impact:**
+- Creates confusion for players who expect consistent behavior
+- Makes it impossible to predict 战争 leadership based on subject relationships
+- Breaks game logic consistency between different 战争 types
+- In 归并国内战s, 宗主国 lose control they would normally have in regular 战争
 
 ### Issue 4: Inconsistency in 同盟 Auto-Call
 
 When the player is the defensive 战争领袖, 同盟 can be asked to join. But when a 附庸 is the defensive 战争领袖, the player cannot call 同盟 to join.
 
-**关键限制：被强制召唤的文化主导国家（进攻方）无法使用人情召唤同盟**
+**CRITICAL LIMITATION: Forcibly Called Culturally Dominant 国家 (进攻方) Cannot Call 同盟 Using 人情**
 
-当同文化国家被强制召唤支持归并国叛乱作为进攻方时，它**无法使用人情召唤其同盟**，因为它不是战争领袖（叛乱国家是战争领袖）。
+When a same-culture 国家 is forcibly called to support a 归并国叛乱 as the 进攻方, it **cannot call its 同盟 using 人情** because it is not the 战争领袖 (the 叛乱 country is the 战争领袖). 
 
-**已验证：无法在战争期间整合归并国附庸**
+**VERIFIED: Cannot Integrate 归并国附庸 During 战争**
 
-在归并国附庸是战争领袖的持续战争中，**不可能**整合/吞并归并国附庸。游戏阻止吞并处于内战中的国家（参见 `ANNEX_TARGET_CIVIL_WAR_PENALTY` 本地化："目前正在经历内战，在恢复和平之前无法被吞并"）。
+It is **NOT possible** to integrate/annex a 归并国附庸 during an ongoing 战争 where the 归并国附庸 is the 战争领袖. The game blocks annexation of countries that are in a 内战 (see `ANNEX_TARGET_CIVIL_WAR_PENALTY` localization: "is currently going through a [civil_war|e] and can not be annexed until peace has been restored").
 
-**文化主导国家可以召唤同盟的唯一场景：**
+**ONLY Scenario Where Culturally Dominant 国家 CAN Call 同盟:**
 
-**当无地归并国叛军被防御方消灭时**：如果归并国叛乱作为群众集会（无地且无领土）生成，其部队被防御方消灭，叛乱将从战争中移除。参战的文化主导国家随后自动成为战争领袖，可以使用人情召唤同盟（成本：每个同盟10人情）。
+**When the landless 归并国叛军 is eliminated by the 防御方**: If the 归并国叛乱 spawns as a 群众集会 (landless with no territory) and its troops are eliminated by the 防御方, the 叛乱 is removed from the 战争. The war participant culturally dominant 国家 then becomes the 战争领袖 automatically, and can call 同盟 using 人情 (cost: 10 人情 per 同盟).
 
-**技术验证：**
-- 归并国附庸在作为战争领袖的持续战争中无法被整合/吞并（被内战限制阻止）
-- `ask_join_war_for_favors` 交互要求调用者是战争领袖（`attacker_leader = scope:actor` 或 `defender_leader = scope:actor`）
-- 成本：每个同盟10人情（来自 `ask_join_war_for_favors_cost`）
-- 战争领导权转移：当无地叛军（战争领袖）被消灭时，剩余的参战国自动成为新的战争领袖
+**Technical Verification:**
+- 归并国附庸s CANNOT be integrated/annexed during an ongoing 战争 where they are the 战争领袖 (blocked by civil war restriction)
+- The `ask_join_war_for_favors` interaction requires the caller to be the 战争领袖 (`attacker_leader = scope:actor` or `defender_leader = scope:actor`)
+- Cost: 10 人情 per 同盟 (from `ask_join_war_for_favors_cost`)
+- War leadership transfer: When the landless 叛军 (战争领袖) is eliminated, the remaining war participant automatically becomes the new 战争领袖
 
-**影响：**
-- 被强制召唤的文化主导国家在整个战争中处于严重劣势，除非无地叛军被防御方消灭，否则无法召唤同盟
-- 这创造了不对称的情况，防御方可以从第一天起与同盟协调，而文化主导的进攻方无法协调（参见问题 9）
-- 文化主导进攻方获得召唤同盟能力的唯一方式取决于防御方的行动（消灭无地叛军），使防御方控制攻击者何时可以召唤同盟
+**Impact:**
+- The forcibly called culturally dominant 国家 is at a severe disadvantage for the entire 战争, unable to call 同盟 unless the landless 叛军 is eliminated by the 防御方
+- This creates an asymmetric situation where the 防御方 can coordinate with 同盟 from day 1, while the culturally dominant 进攻方 cannot (see Issue 9)
+- The only way for the culturally dominant 进攻方 to gain the ability to call 同盟 depends on the 防御方's actions (eliminating the landless 叛军), giving the 防御方 control over when the attacker can call 同盟
 
 ### Issue 5: 包围网 Bypass Mechanism (Severe Exploit)
 
@@ -115,32 +115,32 @@ AI 附庸 may choose 无条件和平 instead of annexing the 叛乱者 even when
 
 归并国 automatically and forcibly call 宗主国 to 战争 through `join_offensive_wars_always` and `join_defensive_wars_always` in `secessionists.txt`.
 
-### 问题 8：停战协议违反惩罚
+### Issue 8: 停战协议 Breaking Penalties
 
-被强制召唤的有停战协议的国家被错误地判定为主动违反停战协议，触发严重惩罚，尽管它们没有选择。
+Forcibly called 国家 with 停战协议 are incorrectly judged as actively breaking 停战协议, triggering severe penalties even though they had no choice.
 
 ### Issue 9: World War Escalation - Asymmetric 同盟 Calling (Severe)
 
-单个本地归并国叛乱可能因不对称同盟召唤机制升级为世界大战。这**比历史世界大战**（第一次世界大战/第二次世界大战）更糟糕，因为历史战争中双方都可以与同盟协调。
+A single local 归并国叛乱 can escalate into a world 战争 due to asymmetric 同盟 calling mechanics. This is **worse than historical world 战争** (WW1/WW2) where both sides could coordinate with 同盟.
 
-**当前 EU5 系统 - 比历史世界大战更糟糕：**
+**Current EU5 System - Worse Than Historical World Wars:**
 
-当归并国叛乱爆发时：
-- 防御方可以从第一天起召唤所有同盟加入防御战争
-- 被强制召唤的同文化国家（进攻方）无法使用人情召唤自己的同盟，因为它不是战争领袖（叛乱国家是战争领袖）
-- **文化主导进攻方可以召唤同盟的唯一例外场景**（详见问题 4）：
-  - 无地归并国叛军被防御方消灭后（自动成为战争领袖）
-- **已验证：无法在战争期间整合归并国附庸** - 处于内战中的国家在恢复和平之前无法被吞并
-- 结果：本地叛乱升级为重大战争，一个同盟集团在整个战争中独自对抗另一个集团的协调响应（除非防御方消灭无地叛军，这很罕见，并使防御方控制攻击者何时可以召唤同盟）
+When a 归并国叛乱 breaks out:
+- The 防御方 CAN call all its 同盟 to join the defensive 战争 from day 1
+- The forcibly called same-culture 国家 (进攻方) CANNOT call its own 同盟 using 人情 because it is NOT the 战争领袖 (the 叛乱 country is the 战争领袖)
+- **ONLY exception scenario where the culturally dominant 进攻方 CAN call 同盟** (see Issue 4 for details):
+  - After the landless 归并国叛军 is eliminated by the 防御方 (becomes 战争领袖 automatically)
+- **VERIFIED: Cannot integrate 归并国附庸 during 战争** - Annexation is blocked for countries in 内战 until peace is restored
+- Result: A local 叛乱 escalates into a major 战争 where one 同盟 bloc fights alone against another bloc's coordinated response for the entire 战争 (unless the 防御方 eliminates the landless 叛军, which is rare and gives the 防御方 control over when the attacker can call 同盟)
 
-*示例场景（18 世纪晚期 - 瓜分时代）：*
-- 两个主要同盟集团：集团 A（俄罗斯、奥地利、普鲁士）vs 集团 B（法兰西、奥斯曼、瑞典、波兰）
-- 波兰归并国叛乱在俄罗斯控制的领土上爆发
-- 波兰（文化主导）被迫加入叛乱一方（进攻方）- 没有选择
-- 俄罗斯（防御方）召唤奥地利和普鲁士 → 3 个主要强国 vs 波兰
-- 波兰（进攻方）无法召唤法兰西、奥斯曼或瑞典（其在集团 B 中的同盟） → 独自对抗 3 个主要强国
+*Example Scenario (Late 18th Century - Partition Era):*
+- Two major 同盟 blocs: Bloc A (俄罗斯, 奥地利, 普鲁士) vs Bloc B (法兰西, 奥斯曼, 瑞典, 波兰)
+- Polish 归并国叛乱 breaks out in 俄罗斯-controlled territory
+- 波兰 (culturally dominant) is FORCED to join 叛乱's side (进攻方) - NO CHOICE
+- 俄罗斯 (防御方) calls 奥地利 and 普鲁士 → 3 major powers vs 波兰
+- 波兰 (进攻方) cannot call 法兰西, 奥斯曼, or 瑞典 (its own 同盟 in Bloc B) → fights alone against 3 major powers
 
-这创造了一个危险的升级机制，防御方可以系统地使用归并国叛乱不对称地攻击敌人的同盟集团。
+This creates a dangerous escalation mechanism where the 防御方 can systematically use 归并国叛乱 to attack their enemies' 同盟 blocs asymmetrically.
 
 ### Issue 10: 吞并叛军 Button Misapplied to War Participant 国家 (Severe - GAME-BREAKING)
 
@@ -357,32 +357,61 @@ The 归并国 mechanism creates a severe exploit that allows knowledgeable playe
 - Player calls 阿拉贡 and 罗马, attacks Opponent again with overwhelming advantage
 - Opponent's 国家 collapses due to 稳定度 penalty and cannot effectively defend
 
+### 利用 3：吞并叛军按钮 - 以 0 成本吞并主要国家（游戏破坏性 - 已验证）
+
+吞并叛军按钮设计用于吞并归并国叛军，但可被误用于以有效 0 成本吞并整个主要参战国，且不产生敌意。
+
+**利用策略**（已验证 - 英格兰 vs 法兰西 和 奥斯曼 vs 札剌亦儿）：
+
+1. 玩家获得人口较少（<50% 地点人口）且与主要国家主要文化匹配的领土
+2. 玩家故意允许或鼓励归并国叛乱在这些领土上发展
+3. 当叛乱生成时，由于人口较少，它成为群众集会（无地且无领土）
+4. 文化主导的主要国家（例如，法兰西代表法国文化，札剌亦儿代表伊拉克文化）被强制加入叛乱一方（进攻方）（问题 1）
+5. 玩家（防御方）消灭群众集会部队，消除叛乱
+6. 战争继续进行，因为主要国家仍在战争中
+7. 主要国家成为战争领袖（唯一剩余的进攻方）
+8. 玩家通过累积战争分数和军事行动获得战争分数
+9. 玩家达到 10 战争分数（最低要求）- 吞并叛军按钮被启用
+10. 玩家使用吞并叛军按钮以有效 0 成本吞并整个主要国家（基础 25% 成本被 `PEACE_COST_MODIFIER_FOR_REVOLT_WAR` 修正值减少 -95%）
+11. 尽管吞并了主要国家，但不产生敌意
+
+**验证：**
+- **已验证示例 1：** 法兰西通过此机制被英格兰吞并 - 英格兰生成一个成为群众集会的叛乱，法兰西被强制召唤，英格兰消灭叛军，获得 10 战争分数（最低要求），然后使用吞并叛军按钮吞并整个法兰西，且未产生敌意
+- **已验证示例 2：** 札剌亦儿通过此机制被奥斯曼吞并 - 奥斯曼在古穆沙内地点只有很少的伊拉克文化人口（只有 31 个伊拉克文化贵族叛乱，<50% 地点人口），生成一个只有 3 名士兵的群众集会叛乱。因为这是伊拉克文化叛乱，札剌亦儿（伊拉克文化主导国家）被强制召唤。奥斯曼消灭了 3 名士兵（群众集会消失），札剌亦儿成为战争领袖，奥斯曼通过围攻几个要塞获得 10% 战争分数，然后使用吞并叛军按钮吞并整个札剌亦儿。被吞并的土地是未整合领土，需要手动核心化
+
+**影响：**
+- **游戏破坏性：** 像法兰西（游戏开始时第三大国家）这样的主要国家可以通过此利用被像英格兰这样较小的国家吞并
+- 吞并主要国家时不产生敌意，破坏游戏平衡
+- 有效 0 成本吞并主要国家（仅适用于小叛军）
+- 完全破坏预期的游戏平衡
+
 ---
 
-## 严重性
+## Severity
 
-这些问题很关键，因为：
-- 玩家对被拖入战争完全没有控制
-- **完全忽略原始所有者** - 系统忽略原始所有权，只考虑文化主导地位（例如，在拜占庭案例中，奥斯曼被忽略，而选择埃雷特纳）
-- **不一致的战争领导权逻辑** - 在正常战争宣战中，当附庸被攻击时，宗主国成为战争领袖，但在归并国内战中，附庸反而成为战争领袖。这创造了不可预测和不一致的游戏逻辑，破坏了玩家期望
-- 联合统治因强制参与而意外破裂
-- 玩家因未选择的行为受到严重惩罚（-50稳定度）
-- **作为群众集会生成的叛乱导致战争分数成本应用于错误目标** - 当群众集会部队被消灭且叛乱被消除时，战争继续，参战国成为战争领袖。吞并叛军按钮（仅用于吞并叛军）随后可用于以有效0成本吞并整个参战国（`take_country_nationalist` 战争目标的基础25%成本，但被 `PEACE_COST_MODIFIER_FOR_REVOLT_WAR` 修正值减少-95%，使其有效成本为0）。这允许像法兰西（游戏开始时第三大国家）这样的主要强国被像英格兰这样较小的国家吞并。**注意：** 如果防御方是战争领袖，理论上可以以25%成本征服土地，但当附庸在归并国叛乱中是战争领袖时，AI附庸永远不会为其宗主国征服土地（参见问题 6）
-- 该机制可以被有经验的玩家以多种方式系统地利用（参见利用场景部分）
-- 该机制违反历史合理性
-- 玩家因AI决策而失去领土和战略控制
-- 不一致性：联合统治与其他属国类型受到不同对待（附庸、采邑受到保护，联合统治没有）
-- **利用 1：** 附庸玩家可以使用其宗主国作为武器攻击同文化国家，并最终宣布独立，破坏预期的游戏平衡
-- **利用 2：** 玩家可以在停战协议期间通过故意通过战争2创建停战协议期间，然后触发归并国叛乱来攻击对手（AI或人类），这迫使受害者加入并受到-50稳定度惩罚，阻止受害者召唤同盟。这完全破坏了单人和多人游戏中的游戏平衡
-- **世界大战升级：** 单个本地叛乱可能因不对称同盟召唤升级为世界大战。防御方可以召唤所有同盟，而被强制召唤的进攻方无法召唤自己的同盟，创造了危险的升级机制
-- **小型属国被拖入遥远战争：** 任何恰好是文化主导的属国（例如，附庸、归并国属国）都会被强制召唤支持同文化的遥远叛乱，即使相距数千公里。玩家失去对其属国外交政策的控制，必须调查以找出其属国为何处于战争状态（已验证：元案例 - 蒙古地区的小型蒙古属国被迫支持格鲁吉亚6000+公里外的叛乱）
-- **有地归并国与无地归并国的不一致行为：** 有地归并国叛乱（>50%文化人口）在获胜时成为文化主导国家的附庸，而无地归并国叛乱（<50%文化人口 - 群众集会）有不一致的结果：要么成为独立国家，要么成为无用的无地附庸（例如，1个骑兵单位，5人）。这创造了不一致的结果，文化主导国家从战斗无地叛乱战争中几乎一无所获（即使在100%战争分数时也只有314-350杜卡特），整个分离主义概念对无地叛军完全崩溃。主要强国为基本上一无所获而进行重大战争（已验证：法兰西 vs 卡斯蒂利亚案例 - 法兰西以100%战争分数战斗了整个战争，只获得314.82到350.72杜卡特，没有领土或有用附庸；无地叛军要么成为独立国家，要么成为5人的无用无地附庸）
+These issues are critical because:
+- Players have absolutely no control over being dragged into 战争
+- **Original owners are completely ignored** - The system ignores original ownership and only looks at cultural dominance (e.g., 奥斯曼 ignored in favor of 埃雷特纳 in 拜占庭 case)
+- **Inconsistent 战争 leadership logic** - In normal 战争 declarations, 宗主国 become 战争领袖 when their 附庸s are attacked, but in 归并国内战s, 附庸s become 战争领袖 instead. This creates unpredictable and inconsistent game logic that breaks player expectations
+- 联合统治 break unexpectedly due to forced participation
+- Players receive severe penalties (-50 稳定度) for actions they did not choose
+- **叛乱 that spawn as 群众集会 cause warscore costs to be applied to wrong target** - When 群众集会 troops are wiped out and 叛乱 is eliminated, the 战争 continues with the war participant 国家 as 战争领袖. The 吞并叛军 button (intended only for annexing 叛军) can then be used to annex the entire war participant 国家 at effectively 0 cost (base 25% cost from `take_country_nationalist` war goal, but reduced by -95% from `PEACE_COST_MODIFIER_FOR_REVOLT_WAR` modifier, making it effectively 0 cost). This allows major powers like 法兰西 (3rd largest 国家 at game start) to be annexed by smaller 国家 like 英格兰. **Note:** The 防御方 can theoretically conquer land at 25% cost if it is the 战争领袖, but AI 附庸 will never conquer land for its 宗主国 when the 附庸 is the 战争领袖 in a 归并国叛乱 (see Issue 6)
+- The mechanism can be systematically exploited by knowledgeable players in multiple ways (see EXPLOITATION SCENARIOS section)
+- The mechanism violates historical rationality
+- Players lose territories and strategic control due to AI decisions
+- Inconsistency: 联合统治 are treated differently from other subject types (附庸, 采邑 are protected, 联合统治 are not)
+- **EXPLOIT 1:** 附庸 players can use their 宗主国 as weapons to attack same-culture 国家 and eventually declare independence, breaking intended gameplay balance
+- **EXPLOIT 2:** Players can attack opponents (AI or human) during a 停战协议 period by intentionally creating a 停战协议 period through War 2, then triggering 归并国叛乱 which forces the victim to join and receive -50 稳定度 penalties, preventing the victim from calling 同盟. This completely breaks game balance in both single-player and multiplayer contexts
+- **利用 3：** 玩家可以通过生成无地归并国叛乱（群众集会），消灭叛军，然后在参战主要国家而非已消灭的叛军上使用吞并叛军按钮，以有效 0 成本吞并主要国家（例如，法兰西、札剌亦儿）。尽管吞并了主要国家，但不产生敌意（游戏破坏性 - 已验证）
+- **WORLD 战争 ESCALATION:** A single local 叛乱 can escalate into a world 战争 due to asymmetric 同盟 calling. The 防御方 can call all 同盟, while forcibly called 进攻方 cannot call its own 同盟, creating a dangerous escalation mechanism
+- **SMALL SUBJECTS DRAGGED INTO DISTANT 战争:** Any subject (e.g., 附庸, 归并国 subject) that happens to be culturally dominant is forcibly called to support distant rebellions of the same culture, even when thousands of kilometers away. Players lose control over their subjects' foreign policy and must investigate to find out why their subjects are at 战争 (VERIFIED: 元 case - small Mongolian subject in Mongolia region forced to support rebellion in Georgia 6000+ km away)
+- **INCONSISTENT BEHAVIOR OF LAND-BASED VS. LANDLESS 归并国:** Land-based 归并国叛乱 (>50% cultural population) become 附庸s of the culturally dominant 国家 when they win, while landless 归并国叛乱 (<50% cultural population - 群众集会) have inconsistent outcomes: either become independent 国家 or useless landless 附庸s (e.g., 1 unit of cavalry with 5 people). This creates inconsistent outcomes where culturally dominant 国家 gain almost nothing from fighting landless 叛乱战争 (only 314-350 ducats even at 100% 战争分数), and the entire secessionist concept falls apart for landless rebels. Major powers fight major 战争 for essentially nothing (VERIFIED: 法兰西 vs 卡斯蒂利亚 case - 法兰西 fought entire 战争 with 100% 战争分数 and gained only 314.82 to 350.72 ducats, no territory or useful 附庸; landless rebel either became independent or useless landless 附庸 with 5 people)
 
 ---
 
 ## Recommended Priority
 
-Issues 1, 2, and 5 should be prioritized as they have the most severe impact on gameplay experience and players have absolutely no control over them. Issue 2 (联合统治 Breaking) is particularly severe because it creates an inconsistency where one subject type (联合统治) is vulnerable while some others (附庸, 采邑) are protected. The exploitation scenarios (Exploit 1 and Exploit 2) make this even more critical, as they completely break game balance in both single-player and multiplayer contexts, making games uncompetitive and unplayable for victims. Further testing is needed to determine if other subject types (朝贡国, 自治领, 卫戍国, 封邑, etc.) are also affected.
+问题 1、2、5 和 10 应优先处理，因为它们对游戏体验影响最严重，且玩家完全无法控制。问题 2（联合统治破裂）尤其严重，因为它造成不一致性，一种属国类型（联合统治）容易受到影响，而其他一些（附庸、采邑）受到保护。问题 10（吞并叛军按钮误用）是游戏破坏性的，因为它允许以 0 成本吞并主要国家。利用场景（利用 1、利用 2 和利用 3）使这更加关键，因为它们完全破坏了单人和多人游戏中的游戏平衡，使游戏对受害者来说不公平且无法游玩。需要进一步测试以确定其他属国类型（朝贡国、自治领、卫戍国、封邑等）是否也受到影响。
 
 ---
 
@@ -468,159 +497,159 @@ Load the 法兰西联合统治 save files. The saves demonstrate:
    - Observe that the 联合统治 between 法兰西 and 西西里 immediately breaks on day 1
    - Observe that 西西里 is now at 战争 with 法兰西 (its former 邦联主导国)
 
-**对其他属国类型保护的验证：**
+**VERIFICATION OF PROTECTION FOR OTHER SUBJECT TYPES:**
 
-以下存档证明附庸和采邑被正确排除在归并国召唤之外。然而，其他属国类型尚未测试，也可能受到影响：
+The following saves demonstrate that 附庸 and 采邑 are correctly excluded from 归并国 calls. However, other subject types have not been tested and may also be affected:
 
-**EU5 属国类型（状态）：**
-- 联合统治：**已验证受影响**
-- 附庸：**已验证被排除**
-- 采邑：**已验证被排除**
-- 朝贡国、自治领、卫戍国、封邑、三曼多、土司、乌奇贝伊等：未测试
+**EU5 Subject Types (Status):**
+- 联合统治: **VERIFIED AFFECTED**
+- 附庸: **VERIFIED EXCLUDED**
+- 采邑: **VERIFIED EXCLUDED**
+- 朝贡国, 自治领, 卫戍国, 封邑, 三曼多, 土司, 乌奇贝伊, etc.: NOT TESTED
 
-### 案例 3：法兰西存档 - 采邑（无召唤）
+### CASE 3: 法兰西 SAVES - 采邑 (No Call)
 
-存档文件 ID：**#1177c64a**
+Save File ID: **#1177c64a**
 
-1. 加载存档 1337.4.1 - 法兰西吞并西西里，创建采邑属国
-   - 法兰西使用控制台命令吞并西西里
-   - 创建新的西西里采邑属国
-2. 加载存档 1337.6.1 - 法兰西征服那不勒斯
-   - 法兰西征服 Calabria Ultra 省份（西西里文化）
-3. 加载存档 1337.7.1 - 法兰西西西里叛军 100%
-   - 使用控制台命令将西西里叛乱进度设置为 100%
-4. 加载存档 1337.8.1 - 法兰西西西里归并国不召唤西西里
-   - 归并国叛乱爆发
-   - 观察西西里（采邑）未被召唤支持叛乱
-   - 这证明采邑被正确排除
+1. Load save 1337.4.1 - 法兰西 ANNEX 西西里, Create 采邑 subject
+   - 法兰西 annexed 西西里 using console command
+   - Created a new 西西里采邑 subject
+2. Load save 1337.6.1 - 法兰西 Conquer 那不勒斯
+   - 法兰西 conquered Calabria Ultra Province (Sicilian culture)
+3. Load save 1337.7.1 - 法兰西 Sicilian Rebel 100%
+   - Sicilian rebellion progress set to 100% using console command
+4. Load save 1337.8.1 - 法兰西 Sicilian 归并国 NOT calling 西西里
+   - 归并国叛乱 breaks out
+   - Observe that 西西里 (采邑) is NOT called to support the 叛乱
+   - This demonstrates that 采邑 are correctly excluded
 
-### 案例 4：法兰西存档 - 附庸（无召唤）
+### CASE 4: 法兰西 SAVES - 附庸 (No Call)
 
-存档文件 ID：**#dae84461**
+Save File ID: **#dae84461**
 
-1. 加载存档 1337.4.1 - 法兰西吞并西西里，创建附庸属国
-   - 法兰西使用控制台命令吞并西西里
-   - 创建新的西西里附庸属国
-2. 加载存档 1337.6.10 - 法兰西征服那不勒斯
-   - 法兰西征服 Calabria Ultra 省份（西西里文化）
-3. 加载存档 1337.7.1 - 法兰西西西里叛军 100%
-   - 使用控制台命令将西西里叛乱进度设置为 100%
-4. 加载存档 1337.8.1 - 法兰西归并国不召唤西西里附庸
-   - 归并国叛乱爆发
-   - 观察西西里（附庸）未被召唤支持叛乱
-   - 这证明附庸被正确排除
+1. Load save 1337.4.1 - 法兰西 ANNEX 西西里, Create 附庸 subject
+   - 法兰西 annexed 西西里 using console command
+   - Created a new 西西里附庸 subject
+2. Load save 1337.6.10 - 法兰西 Conquer 那不勒斯
+   - 法兰西 conquered Calabria Ultra Province (Sicilian culture)
+3. Load save 1337.7.1 - 法兰西 Sicilian Rebel 100%
+   - Sicilian rebellion progress set to 100% using console command
+4. Load save 1337.8.1 - 法兰西归并国 NOT calling 西西里附庸
+   - 归并国叛乱 breaks out
+   - Observe that 西西里 (附庸) is NOT called to support the 叛乱
+   - This demonstrates that 附庸 are correctly excluded
 
-**结论：** 联合统治已验证会收到归并国召唤，而附庸和采邑已验证被排除。这创造了不一致性，联合统治破裂，而其他一些属国类型受到保护。其他属国类型尚未测试，也可能受到影响。
+**CONCLUSION:** 联合统治 are VERIFIED to receive 归并国 calls, while 附庸 and 采邑 are VERIFIED to be excluded. This creates an inconsistency where 联合统治 break while some other subject types are protected. Other subject types have not been tested and may also be affected.
 
-### 案例 5：法兰西存档 - 包围网绕过和停战协议违反（演示问题 1、5 和 8）
+### CASE 5: 法兰西 SAVES - 包围网 BYPASS AND 停战协议 BREAKING (Demonstrates Issues 1, 5, and 8)
 
-存档文件 ID：**#75e13d1**
+Save File ID: **#75e13d1**
 
-加载法兰西存档文件。存档设置如下：
-- 法兰西已与阿拉贡和罗马形成同盟
-- 法兰西在无宣战理由战争中击败卡斯蒂利亚并占领卡斯蒂利亚领土
-- 卡斯蒂利亚归并国叛乱准备生成（或已经生成）
-- 卡斯蒂利亚可能处于针对法兰西的包围网中（或在停战协议结束后加入）
+Load the 法兰西 save files. The saves are set up with:
+- 法兰西 has formed 同盟 with 阿拉贡 and 罗马
+- 法兰西 has defeated 卡斯蒂利亚 in a No CB 战争 and taken Castilian territories
+- Castilian 归并国叛乱 is ready to spawn (or has already spawned)
+- 卡斯蒂利亚 may be in a 包围网 against 法兰西 (or will join after 停战协议 ends)
 
-**观察问题 1 的步骤**（同文化国家被迫加入）：
+**Steps to observe Issue 1** (Same-Culture Countries Forced to Join):
 
-1. 加载法兰西存档 1338.4.1 - 法兰西与卡斯蒂利亚停战协议，添加卡斯蒂利亚叛军至 100%
-2. 使用控制台命令强制将卡斯蒂利亚叛乱进度设置为 100%
-3. 当归并国叛军并宣布内战时，观察卡斯蒂利亚自动且强制被召唤加入叛军一方的战争
-4. 观察卡斯蒂利亚无法拒绝此召唤 - 它被迫进入战争
+1. Load the 法兰西 save 1338.4.1 - 法兰西停战协议 with 卡斯蒂利亚, Add Castilian Rebel to 100%
+2. Console command is used to force Castilian rebellion progress to 100%
+3. When 归并国叛军s and declare 内战, observe that 卡斯蒂利亚 is automatically and forcibly called to 战争 on the 叛军 side
+4. Observe that 卡斯蒂利亚 cannot refuse this call - it is forced into the 战争
 
-**观察问题 8 的步骤**（停战协议违反）：
+**Steps to observe Issue 8** (停战协议 Breaking):
 
-1. 加载法兰西存档 1338.4.1 - 法兰西与卡斯蒂利亚停战协议，添加卡斯蒂利亚叛军至 100%
-2. 如果卡斯蒂利亚和法兰西在叛乱战争开始时处于停战协议状态，观察卡斯蒂利亚在叛乱爆发的下一个月因"违反停战协议"受到 -50 稳定度惩罚
-3. 观察卡斯蒂利亚被判定为主动违反停战协议，尽管它被强制召唤参战且没有选择
+1. Load the 法兰西 save 1338.4.1 - 法兰西停战协议 with 卡斯蒂利亚, Add Castilian Rebel to 100%
+2. If 卡斯蒂利亚 and 法兰西 have a 停战协议 when the rebellion 战争 begins, observe that 卡斯蒂利亚 receives -50 稳定度 penalty for "breaking 停战协议" in the next month when rebellion breaks out
+3. Observe that 卡斯蒂利亚 is judged as actively breaking the 停战协议 even though it was forcibly called to 战争 and had no choice
 
-**观察问题 5 的步骤**（包围网绕过）：
+**Steps to observe Issue 5** (包围网 Bypass):
 
-1. 加载法兰西存档 1346.8.2 - 法兰西卡斯蒂利亚联合包围网，添加卡斯蒂利亚叛军至 100%
-2. 卡斯蒂利亚已加入针对法兰西的包围网
-3. 当归并国叛军时，观察卡斯蒂利亚被强制召唤作为进攻方（叛军一方）参战
-4. 观察卡斯蒂利亚无法召唤包围网成员（葡萄牙、纳瓦拉）加入战争，因为它是攻击者
-5. 观察法兰西（防御方）可以召唤同盟（阿拉贡、罗马）加入防御战争
-6. 结果：法兰西可以绕过包围网单独攻击卡斯蒂利亚，而卡斯蒂利亚无法获得包围网或盟友支持
-7. 观察卡斯蒂利亚将在叛乱战争结束后离开包围网
+1. Load the 法兰西 save 1346.8.2 - 法兰西卡斯蒂利亚 Joint 包围网, Add Castilian Rebel to 100%
+2. 卡斯蒂利亚 has joined a 包围网 against 法兰西
+3. When 归并国叛军s, observe that 卡斯蒂利亚 is forcibly called to 战争 as the 进攻方 (叛军 side)
+4. Observe that 卡斯蒂利亚 cannot call 包围网 members (葡萄牙, 纳瓦拉) to join the 战争 because it is the attacker
+5. Observe that 法兰西 (防御方) CAN call 同盟 (阿拉贡, 罗马) to join the defensive 战争
+6. Result: 法兰西 can bypass the 包围网 to attack 卡斯蒂利亚 alone, while 卡斯蒂利亚 cannot obtain 包围网 or ally support
+7. Observe that 卡斯蒂利亚 will leave the 包围网 after the rebellion 战争 ends
 
-### 案例 6：法兰西 vs 卡斯蒂利亚无地叛军行为（演示问题 12 - 已验证）
+### CASE 6: 法兰西 vs 卡斯蒂利亚 LANDLESS REBEL BEHAVIOR (Demonstrates Issue 12 - VERIFIED)
 
-存档文件 ID：**#39d23961**
+Save File ID: **#39d23961**
 
-加载法兰西 vs 卡斯蒂利亚无地叛军存档文件。存档演示：
-- 卡斯蒂利亚已征服 Loudun（法国文化领土）
-- 法国归并国叛乱作为群众集会生成（<50% 法国文化人口）
-- 法兰西（文化主导）被强制召唤支持叛乱
+Load the 法兰西 vs 卡斯蒂利亚 landless rebel save files. The saves demonstrate:
+- 卡斯蒂利亚 has conquered Loudun (French culture territory)
+- French 归并国叛乱 spawns as 群众集会 (<50% French culture population)
+- 法兰西 (culturally dominant) is forcibly called to support the 叛乱
 
-**观察问题 12 的步骤**（无地叛军行为）：
+**Steps to observe Issue 12** (Landless Rebel Behavior):
 
-1. 加载存档 1337.5.1 - 卡斯蒂利亚征服 Loudun，添加叛乱 100%
-   - 作为卡斯蒂利亚游戏
-   - 控制台：`conquer loudun`
-   - 将叛乱进度添加到 1（100%）
-2. 加载存档 1337.6.1 - 法兰西加入归并国战争，占领卡斯蒂利亚，1 - 无土地转移给 AAA00
-   - 作为法兰西游戏
-   - 控制台：`occupy_country CAS` 以获得 100% 战争分数
-   - 观察：没有土地转移给新生成的标签 AAA00（无地叛军）
-3. 加载存档 1337.6.1 - 法兰西加入归并国战争，占领卡斯蒂利亚，2 - Loudun 转移给 AAA00
-   - 作为法兰西游戏
-   - 控制台：`occupy_country CAS` 以获得 100% 战争分数
-   - 观察：Loudun 转移给新生成的标签 AAA00（无地叛军）
-4. 加载存档 1337.8.1 - 法兰西 1. 设置现金 0
-   - 存档 2 后 2 个月
-   - 将现金设置为 0 以检查获得的战争赔款
-5. 加载存档 1337.8.9 - 法兰西 1. 获得 350.72 战争赔款，AAA00 成为无地归并国
-   - 存档 2 后 9 天
-   - AAA00 与卡斯蒂利亚议和
-   - 观察：法兰西获得 350.72 杜卡特，AAA00 是一个无地归并国附庸，有 1 个骑兵单位（5 人）
-6. 加载存档 1337.8.1 - 法兰西 2. 设置现金 0
-   - 存档 3 后 2 个月
-   - 将现金设置为 0 以检查获得的战争赔款
-7. 加载存档 1337.8.11 - 法兰西 2. 获得 314.82 战争赔款，AAA00 成为有地独立国家
-   - 存档 2 后 11 天
-   - AAA00 与卡斯蒂利亚议和
-   - 观察：法兰西获得 314.82 杜卡特，AAA00 现在是一个定居国家，但**不是**法兰西的归并国附庸
+1. Load save 1337.5.1 - 卡斯蒂利亚 Conquer Loudun, add revolt 100%
+   - Play as 卡斯蒂利亚
+   - Console: `conquer loudun`
+   - Add rebel progress to 1 (100%)
+2. Load save 1337.6.1 - 法兰西 Join Secessionist War, Occupy 卡斯蒂利亚, 1 - No Land Transferred to AAA00
+   - Play as 法兰西
+   - Console: `occupy_country CAS` to gain 100% 战争分数
+   - Observe: No land is transferred to newly spawned tag AAA00 (a landless rebel)
+3. Load save 1337.6.1 - 法兰西 Join Secessionist War, Occupy 卡斯蒂利亚, 2 - Loudun Transferred to AAA00
+   - Play as 法兰西
+   - Console: `occupy_country CAS` to gain 100% 战争分数
+   - Observe: Loudun is transferred to newly spawned tag AAA00 (a landless rebel)
+4. Load save 1337.8.1 - 法兰西 1. Set Cash 0
+   - 2 months after save 2
+   - Set cash to 0 to check gained 战争赔款
+5. Load save 1337.8.9 - 法兰西 1. Gain 350.72 War Reparation, AAA00 Becomes Landless Secessionist
+   - 9 days after save 2
+   - AAA00 makes peace with 卡斯蒂利亚
+   - Observe: 法兰西 gained 350.72 ducats, and AAA00 is a landless 归并国附庸 with 1 unit of cavalry (5 people)
+6. Load save 1337.8.1 - 法兰西 2. Set Cash 0
+   - 2 months after save 3
+   - Set cash to 0 to check gained 战争赔款
+7. Load save 1337.8.11 - 法兰西 2. Gain 314.82 War Reparation, AAA00 Becomes landed INDEPENDENT
+   - 11 days after save 2
+   - AAA00 made peace with 卡斯蒂利亚
+   - Observe: 法兰西 gained 314.82 ducats, and AAA00 is now a settled country but **NOT a 归并国附庸** of 法兰西
 
-**关键观察：**
-- 两个主要强国（法兰西和卡斯蒂利亚）为基本上一无所获而战斗
-- 100% 战争分数的最佳情况：法兰西只获得 314.82 到 350.72 杜卡特（战争赔款）
-- 无地叛军（AAA00）要么：
-  1. 成为有 1 个骑兵单位（5 人）的无地归并国附庸 - 实际上无用
-  2. 成为定居国家，但**不是**法兰西的归并国附庸 - 完全独立
-- 这证明分离主义概念对无地叛军完全崩溃 - 对于无地分离主义者来说，在分离主义战争中战斗几乎没有好处，因为所谓的宗主国法兰西几乎一无所获，如果无地叛军成为定居国家，它不会成为法兰西的有用附庸
+**CRITICAL OBSERVATIONS:**
+- Two major powers (法兰西 and 卡斯蒂利亚) fight a 战争 for essentially nothing
+- Best case scenario with 100% 战争分数: 法兰西 gains only 314.82 to 350.72 ducats (战争赔款)
+- The landless rebel (AAA00) either:
+  1. Becomes a landless 归并国附庸 with 1 unit of cavalry (5 people) - effectively useless
+  2. Becomes a settled country but **NOT a 归并国附庸** of 法兰西 - completely independent
+- This demonstrates that the secessionist concept completely falls apart for landless rebels - there is almost no benefit to fighting in a secessionist 战争 for a landless secessionist because the supposedly overlord 法兰西 gains almost nothing, and the landless rebel does NOT become 法兰西's useful 附庸 if it becomes settled
 
-### 案例 7：卡斯蒂利亚存档 - 攻击方召唤盟友（演示问题 4 - 已验证）
+### CASE 7: 卡斯蒂利亚 SAVES - ATTACKER ALLY CALLING (Demonstrates Issue 4 - VERIFIED)
 
-存档文件 ID：**#db345ae3**
+Save File ID: **#db345ae3**
 
-加载卡斯蒂利亚存档文件。存档演示：
-- 卡斯蒂利亚与葡萄牙有同盟
-- 卡斯蒂利亚已征服 Loudun（法国文化领土）
-- 法国归并国叛乱作为群众集会生成（<50% 法国文化人口）
-- 法兰西（文化主导）被强制召唤支持叛乱
-- 法兰西与阿拉贡和罗马有同盟
-- 法兰西与阿拉贡和罗马有 100 人情
+Load the 卡斯蒂利亚 save files. The saves demonstrate:
+- 卡斯蒂利亚 has 同盟 with 葡萄牙
+- 卡斯蒂利亚 has conquered Loudun (French culture territory)
+- French 归并国叛乱 spawns as 群众集会 (<50% French culture population)
+- 法兰西 (culturally dominant) is forcibly called to support the 叛乱
+- 法兰西 has 同盟 with 阿拉贡 and 罗马
+- 法兰西 has 100 人情 with 阿拉贡 and 罗马
 
-**观察问题 4 的步骤**（使用人情召唤攻击方盟友）：
+**Steps to observe Issue 4** (Attacker Ally Calling Using 人情):
 
-1. 加载存档 1337.5.1 - 卡斯蒂利亚与葡萄牙结盟，征服 Loudun，添加叛乱 100%
-   - 作为卡斯蒂利亚游戏
-   - 卡斯蒂利亚与葡萄牙有同盟
-   - 控制台：`conquer loudun`
-   - 将叛乱进度添加到 1（100%）
-2. 加载存档 1337.5.1 - 法兰西与罗马、阿拉贡结盟，人情 100
-   - 切换到法兰西游戏
-   - 法兰西与阿拉贡、罗马结盟
-   - 使用控制台命令 `favor ARA 100` 和 `favor PAP 100` 添加人情
-3. 加载存档 1337.6.1 - 法兰西归并国战争
-   - 归并国叛军在 1337.6.1 爆发
-   - Loudun 中的群众集会叛军是战争领袖，因此法兰西无法召唤阿拉贡和罗马参战
-4. 加载存档 1337.6.3 - 法兰西消灭无地叛军，可以召唤阿拉贡和罗马
-   - 使用控制台命令 `kill_unit` 消灭群众集会归并国叛军部队
-   - 法兰西成为战争领袖
-   - 法兰西可以使用人情召唤阿拉贡和罗马加入战争
+1. Load save 1337.5.1 - 卡斯蒂利亚 Ally 葡萄牙, Conquer Loudun, Add Revolt 100%
+   - Play as 卡斯蒂利亚
+   - 卡斯蒂利亚 has 同盟 with 葡萄牙
+   - Console: `conquer loudun`
+   - Add rebel progress to 1 (100%)
+2. Load save 1337.5.1 - 法兰西 Ally 罗马, 阿拉贡, 人情 100
+   - Tag to play as 法兰西
+   - 法兰西 allied with 阿拉贡, 罗马
+   - Use console command `favor ARA 100` and `favor PAP 100` to add 人情
+3. Load save 1337.6.1 - 法兰西 Secessionist 战争
+   - 归并国叛军 breaks out on 1337.6.1
+   - 群众集会叛军 in Loudun is the 战争领袖, hence 法兰西 cannot call 阿拉贡 and 罗马 to arms
+4. Load save 1337.6.3 - 法兰西 Killed Landless 叛军, CAN Call 阿拉贡 and 罗马
+   - Use console command `kill_unit` to kill troops of 群众集会归并国叛军
+   - 法兰西 becomes 战争领袖
+   - 法兰西 can call 阿拉贡 and 罗马 to join 战争 using 人情
 
 ---
 
@@ -628,70 +657,70 @@ Load the 法兰西联合统治 save files. The saves demonstrate:
 
 Multiple game saves have been prepared and attached:
 
-**拜占庭存档**（问题 1、3、4、6、7）：
-存档文件 ID：**#f40b1288**
+**拜占庭 Saves** (Issues 1, 3, 4, 6, 7):
+Save File ID: **#f40b1288**
 - 1337.7.2 - Byzantium HUD Revolt 100%
 - 1337.8.1 - Byzantium HUD ERE War
 - 1339.2.1 - Byzantium HUD ERE War Stuck
-- 演示各种场景的其他存档
+- Additional saves demonstrating various scenarios
 
-**法兰西联合统治存档**（问题 2 - 已验证）：
-存档文件 ID：**#51d1fcfd**
-- 1337.5.1.2 - 法兰西联合统治西西里，无宣战理由对那不勒斯
-- 1337.6.1 - 法兰西征服那不勒斯
-- 1337.7.1 - 法兰西西西里叛军 100%
-- 1337.8.1 - 法兰西联合统治破裂
+**法兰西联合统治 Saves** (Issue 2 - VERIFIED):
+Save File ID: **#51d1fcfd**
+- 1337.5.1.2 - 法兰西联合统治西西里, No CB 那不勒斯
+- 1337.6.1 - 法兰西 Conquer 那不勒斯
+- 1337.7.1 - 法兰西 Sicilian Rebel 100%
+- 1337.8.1 - 法兰西联合统治 Broken
 
-**法兰西采邑存档**（验证 - 无召唤）：
-存档文件 ID：**#1177c64a**
-- 1337.4.1 - 法兰西吞并西西里，创建采邑属国
-- 1337.6.1 - 法兰西征服那不勒斯
-- 1337.7.1 - 法兰西西西里叛军 100%
-- 1337.8.1 - 法兰西西西里归并国不召唤西西里
+**法兰西采邑 Saves** (Verification - No Call):
+Save File ID: **#1177c64a**
+- 1337.4.1 - 法兰西 ANNEX 西西里, Create 采邑 subject
+- 1337.6.1 - 法兰西 Conquer 那不勒斯
+- 1337.7.1 - 法兰西 Sicilian Rebel 100%
+- 1337.8.1 - 法兰西 Sicilian 归并国 NOT calling 西西里
 
-**法兰西附庸存档**（验证 - 无召唤）：
-存档文件 ID：**#dae84461**
-- 1337.4.1 - 法兰西吞并西西里，创建附庸属国
-- 1337.6.10 - 法兰西征服那不勒斯
-- 1337.7.1 - 法兰西西西里叛军 100%
-- 1337.8.1 - 法兰西归并国不召唤西西里附庸
+**法兰西附庸 Saves** (Verification - No Call):
+Save File ID: **#dae84461**
+- 1337.4.1 - 法兰西 ANNEX 西西里, Create 附庸 subject
+- 1337.6.10 - 法兰西 Conquer 那不勒斯
+- 1337.7.1 - 法兰西 Sicilian Rebel 100%
+- 1337.8.1 - 法兰西 Secessionist NOT calling 西西里附庸
 
-**法兰西包围网/停战协议存档**（问题 1、5 和 8）：
-存档文件 ID：**#75e13d1**
-- 1338.4.1 - 法兰西与卡斯蒂利亚停战协议，添加卡斯蒂利亚叛军至 100%
-- 1346.8.2 - 法兰西卡斯蒂利亚联合包围网，添加卡斯蒂利亚叛军至 100%
-- 演示各种场景的其他存档
+**法兰西包围网/停战协议 Saves** (Issues 1, 5, 8):
+Save File ID: **#75e13d1**
+- 1338.4.1 - 法兰西停战协议 with 卡斯蒂利亚, Add Castilian Rebel to 100%
+- 1346.8.2 - 法兰西卡斯蒂利亚 Joint 包围网, Add Castilian Rebel to 100%
+- Additional saves demonstrating various scenarios
 
-**法兰西 vs 卡斯蒂利亚无地叛军存档**（问题 12 - 已验证）：
-存档文件 ID：**#39d23961**
-- 1337.5.1 - 卡斯蒂利亚征服 Loudun，添加叛乱 100%
-- 1337.6.1 - 法兰西加入归并国战争，占领卡斯蒂利亚，1 - 无土地转移给 AAA00
-- 1337.6.1 - 法兰西加入归并国战争，占领卡斯蒂利亚，2 - Loudun 转移给 AAA00
-- 1337.8.1 - 法兰西 1. 设置现金 0
-- 1337.8.9 - 法兰西 1. 获得 350.72 战争赔款，AAA00 成为无地归并国
-- 1337.8.1 - 法兰西 2. 设置现金 0
-- 1337.8.11 - 法兰西 2. 获得 314.82 战争赔款，AAA00 成为有地独立国家
+**法兰西 vs 卡斯蒂利亚 Landless Rebel Saves** (Issue 12 - VERIFIED):
+Save File ID: **#39d23961**
+- 1337.5.1 - 卡斯蒂利亚 Conquer Loudun, add revolt 100%
+- 1337.6.1 - 法兰西 Join Secessionist War, Occupy 卡斯蒂利亚, 1 - No Land Transferred to AAA00
+- 1337.6.1 - 法兰西 Join Secessionist War, Occupy 卡斯蒂利亚, 2 - Loudun Transferred to AAA00
+- 1337.8.1 - 法兰西 1. Set Cash 0
+- 1337.8.9 - 法兰西 1. Gain 350.72 War Reparation, AAA00 Becomes Landless Secessionist
+- 1337.8.1 - 法兰西 2. Set Cash 0
+- 1337.8.11 - 法兰西 2. Gain 314.82 War Reparation, AAA00 Becomes landed INDEPENDENT
 
-**卡斯蒂利亚存档 - 攻击方召唤盟友**（问题 4 - 已验证）：
-存档文件 ID：**#db345ae3**
-- 1337.5.1 - 卡斯蒂利亚与葡萄牙结盟，征服 Loudun，添加叛乱 100%
-- 1337.5.1 - 法兰西与罗马、阿拉贡结盟，人情 100
-- 1337.6.1 - 法兰西归并国战争
-- 1337.6.3 - 法兰西消灭无地叛军，可以召唤阿拉贡和罗马
+**卡斯蒂利亚 Saves - Attacker Ally Calling** (Issue 4 - VERIFIED):
+Save File ID: **#db345ae3**
+- 1337.5.1 - 卡斯蒂利亚 Ally 葡萄牙, Conquer Loudun, Add Revolt 100%
+- 1337.5.1 - 法兰西 Ally 罗马, 阿拉贡, 人情 100
+- 1337.6.1 - 法兰西 Secessionist 战争
+- 1337.6.3 - 法兰西 Killed Landless 叛军, CAN Call 阿拉贡 and 罗马
 
 ---
 
-## 相关文件
+## Relevant Files
 
-- `game/in_game/common/subject_types/secessionists.txt`（第 12-17 行：`join_offensive_wars_always`、`join_defensive_wars_always`）
+- `game/in_game/common/subject_types/secessionists.txt` (lines 12-17: `join_offensive_wars_always`, `join_defensive_wars_always`)
 - `game/in_game/common/subject_types/vassal.txt`
-- `game/in_game/common/scripted_relations/alliance.txt`（第 13-14 行：`called_in_defensively`、`called_in_offensively`）
-- `game/in_game/common/scripted_relations/union_of_crowns_pact.txt`（第 10 行：`break_on_war = yes`）
-- `game/in_game/common/on_action/_hardcoded.txt`（第 717-777 行：`on_civil_war_start` - 用于召唤同文化国家的硬编码机制）
-- `game/in_game/common/scripted_effects/global_effects.txt`（第 218 行：`start_civil_war`）
-- `game/in_game/common/prices/00_hardcoded.txt`（第 100-103 行：`war_breaking_truce` - stability = 50, war_exhaustion = 1）
-- `game/in_game/common/biases/05_antagonism_hardcoded.txt`（第 35-38 行：`antagonism_breaking_truce` - value = 25）
-- `game/in_game/common/wargoals/00_default.txt`（第 89-99 行：`take_country_nationalist` - `type = take_country`、`conquer_cost = 0.25`、`subjugate_cost = 0.25` - 归并国战争的低战争分数成本，用于吞并叛军，但当参战国因问题 10 成为战争领袖时可被利用。`type = take_country` 允许通过吞并叛军按钮吞并整个国家）
-- `game/main_menu/localization/english/war_overview_l_english.yml`（第 8 行：`WAR_LATERALVIEW_ANNEX_REVOLTER: "Annex Revolter"` - 允许吞并叛军国家的和平选项）
-- `game/main_menu/localization/english/diplomacy_l_english.yml`（第 1149-1150 行：`PEACE_TREATY_ANNEX_REVOLTER` - 吞并叛军的和平条约描述）
-- `game/loading_screen/common/defines/00_defines.txt`（第 1673 行：`MIN_WARSCORE_TO_DEMAND = 10` - 启用吞并叛军等和平选项所需的最低战争分数；第 1832-1833 行：`PEACE_TREATY_ANNEX_REVOLTER_MAX_COST = 70`、`PEACE_TREATY_REVOLTER_SURVIVES_MAX_COST = 70`）
+- `game/in_game/common/scripted_relations/alliance.txt` (lines 13-14: `called_in_defensively`, `called_in_offensively`)
+- `game/in_game/common/scripted_relations/union_of_crowns_pact.txt` (line 10: `break_on_war = yes`)
+- `game/in_game/common/on_action/_hardcoded.txt` (line 717-777: `on_civil_war_start` - hardcoded mechanism for calling same-culture countries)
+- `game/in_game/common/scripted_effects/global_effects.txt` (line 218: `start_civil_war`)
+- `game/in_game/common/prices/00_hardcoded.txt` (lines 100-103: `war_breaking_truce` - stability = 50, war_exhaustion = 1)
+- `game/in_game/common/biases/05_antagonism_hardcoded.txt` (lines 35-38: `antagonism_breaking_truce` - value = 25)
+- `game/in_game/common/wargoals/00_default.txt` (lines 89-99: `take_country_nationalist` - `type = take_country`, `conquer_cost = 0.25`, `subjugate_cost = 0.25` - low warscore costs for 归并国战争, intended for annexing 叛军s but exploitable when war participant 国家 becomes 战争领袖 due to Issue 10. The `type = take_country` allows annexing the entire 国家 via 吞并叛军 button)
+- `game/main_menu/localization/english/war_overview_l_english.yml` (line 8: `WAR_LATERALVIEW_ANNEX_REVOLTER: "Annex Revolter"` - peace option that allows annexing revolter countries)
+- `game/main_menu/localization/english/diplomacy_l_english.yml` (lines 1149-1150: `PEACE_TREATY_ANNEX_REVOLTER` - peace treaty description for annexing revolters)
+- `game/loading_screen/common/defines/00_defines.txt` (line 1673: `MIN_WARSCORE_TO_DEMAND = 10` - minimum war score required to enable peace options like 吞并叛军; lines 1832-1833: `PEACE_TREATY_ANNEX_REVOLTER_MAX_COST = 70`, `PEACE_TREATY_REVOLTER_SURVIVES_MAX_COST = 70`)
