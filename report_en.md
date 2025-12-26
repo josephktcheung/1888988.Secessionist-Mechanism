@@ -351,10 +351,10 @@ The Secessionists mechanism creates a severe exploit that allows knowledgeable p
 - Player allows Castilian Secessionists Rebellion to develop (Rebel progress approaching 100%)
 - Player declares War 2 against Opponent (Castile - AI or human player) when Castilian Rebellion is at 95% progress
 - Player quickly white peaces War 2, creating a new Truce period
-- Player forms Alliance with Aragon and Rome during this new Truce period
+- Player forms Alliance with Aragon and Papal States during this new Truce period
 - Castilian Secessionists Rebellion breaks out
 - Opponent (Castile) is forced to join Rebellion side, receives -50 Stability, cannot call Allies
-- Player calls Aragon and Rome, attacks Opponent again with overwhelming advantage
+- Player calls Aragon and Papal States, attacks Opponent again with overwhelming advantage
 - Opponent's Country collapses due to Stability penalty and cannot effectively defend
 
 ### EXPLOIT 3: Annex Revolter BUTTON - ANNEXING MAJOR POWERS AT 0 COST (GAME-BREAKING - VERIFIED)
@@ -546,7 +546,7 @@ Save File ID: **#dae84461**
 Save File ID: **#75e13d1**
 
 Load the France save files. The saves are set up with:
-- France has formed Alliance with Aragon and Rome
+- France has formed Alliance with Aragon and Papal States
 - France has defeated Castile in a No CB War and taken Castilian territories
 - Castilian Secessionists Rebellion is ready to spawn (or has already spawned)
 - Castile may be in a Coalition against France (or will join after Truce ends)
@@ -570,7 +570,7 @@ Load the France save files. The saves are set up with:
 2. Castile has joined a Coalition against France
 3. When Secessionists Rebels, observe that Castile is forcibly called to War as the Attacker (Rebel side)
 4. Observe that Castile cannot call Coalition members (Portugal, Navarre) to join the War because it is the attacker
-5. Observe that France (Defender) CAN call Allies (Aragon, Rome) to join the defensive War
+5. Observe that France (Defender) CAN call Allies (Aragon, Papal States) to join the defensive War
 6. Result: France can bypass the Coalition to attack Castile alone, while Castile cannot obtain Coalition or ally support
 7. Observe that Castile will leave the Coalition after the rebellion War ends
 
@@ -629,8 +629,8 @@ Load the Castile save files. The saves demonstrate:
 - Castile has conquered Loudun (French culture territory)
 - French Secessionists Rebellion spawns as Society of Pops (<50% French culture population)
 - France (culturally dominant) is forcibly called to support the Rebellion
-- France has Alliance with Aragon and Rome
-- France has 100 Favors with Aragon and Rome
+- France has Alliance with Aragon and Papal States
+- France has 100 Favors with Aragon and Papal States
 
 **Steps to observe Issue 4** (Attacker Ally Calling Using Favors):
 
@@ -639,17 +639,17 @@ Load the Castile save files. The saves demonstrate:
    - Castile has Alliance with Portugal
    - Console: `conquer loudun`
    - Add rebel progress to 1 (100%)
-2. Load save 1337.5.1 - France Ally Rome, Aragon, Favor 100
+2. Load save 1337.5.1 - France Ally Papal States, Aragon, Favor 100
    - Tag to play as France
-   - France allied with Aragon, Rome
+   - France allied with Aragon, Papal States
    - Use console command `favor ARA 100` and `favor PAP 100` to add Favor
 3. Load save 1337.6.1 - France Secessionist War
    - Secessionists Rebel breaks out on 1337.6.1
-   - Society of Pops Rebel in Loudun is the War Leader, hence France cannot call Aragon and Rome to arms
-4. Load save 1337.6.3 - France Killed Landless Rebel, CAN Call Aragon and Rome
+   - Society of Pops Rebel in Loudun is the War Leader, hence France cannot call Aragon and Papal States to arms
+4. Load save 1337.6.3 - France Killed Landless Rebel, CAN Call Aragon and Papal States
    - Use console command `kill_unit` to kill troops of Society of Pops Secessionists Rebel
    - France becomes War Leader
-   - France can call Aragon and Rome to join War using Favors
+   - France can call Aragon and Papal States to join War using Favors
 
 ---
 
@@ -704,9 +704,9 @@ Save File ID: **#39d23961**
 **Castile Saves - Attacker Ally Calling** (Issue 4 - VERIFIED):
 Save File ID: **#db345ae3**
 - 1337.5.1 - Castile Ally Portugal, Conquer Loudun, Add Revolt 100%
-- 1337.5.1 - France Ally Rome, Aragon, Favor 100
+- 1337.5.1 - France Ally Papal States, Aragon, Favor 100
 - 1337.6.1 - France Secessionist War
-- 1337.6.3 - France Killed Landless Rebel, CAN Call Aragon and Rome
+- 1337.6.3 - France Killed Landless Rebel, CAN Call Aragon and Papal States
 
 ---
 

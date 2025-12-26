@@ -351,10 +351,10 @@ The $secessionists$ mechanism creates a severe exploit that allows knowledgeable
 - Player allows Castilian $secessionists$ $game_concept_rebellion$ to develop ($game_concept_rebel$ progress approaching 100%)
 - Player declares War 2 against Opponent ($CAS$ - AI or human player) when Castilian $game_concept_rebellion$ is at 95% progress
 - Player quickly white peaces War 2, creating a new $game_concept_truce$ period
-- Player forms $game_concept_alliance$ with $ARA$ and $PAP$ during this new $game_concept_truce$ period
+- Player forms $game_concept_alliance$ with $ARA$ and $PAP_papacy$ during this new $game_concept_truce$ period
 - Castilian $secessionists$ $game_concept_rebellion$ breaks out
 - Opponent ($CAS$) is forced to join $game_concept_rebellion$ side, receives -50 $game_concept_stability$, cannot call $game_concept_allies$
-- Player calls $ARA$ and $PAP$, attacks Opponent again with overwhelming advantage
+- Player calls $ARA$ and $PAP_papacy$, attacks Opponent again with overwhelming advantage
 - Opponent's $game_concept_country$ collapses due to $game_concept_stability$ penalty and cannot effectively defend
 
 ### EXPLOIT 3: $WAR_LATERALVIEW_ANNEX_REVOLTER$ BUTTON - ANNEXING MAJOR POWERS AT 0 COST (GAME-BREAKING - VERIFIED)
@@ -546,7 +546,7 @@ Save File ID: **#dae84461**
 Save File ID: **#75e13d1**
 
 Load the $FRA$ save files. The saves are set up with:
-- $FRA$ has formed $game_concept_alliance$ with $ARA$ and $PAP$
+- $FRA$ has formed $game_concept_alliance$ with $ARA$ and $PAP_papacy$
 - $FRA$ has defeated $CAS$ in a No CB $game_concept_war$ and taken Castilian territories
 - Castilian $secessionists$ $game_concept_rebellion$ is ready to spawn (or has already spawned)
 - $CAS$ may be in a $game_concept_coalition$ against $FRA$ (or will join after $game_concept_truce$ ends)
@@ -570,7 +570,7 @@ Load the $FRA$ save files. The saves are set up with:
 2. $CAS$ has joined a $game_concept_coalition$ against $FRA$
 3. When $secessionists$ $game_concept_rebel$s, observe that $CAS$ is forcibly called to $game_concept_war$ as the $game_concept_attacker$ ($game_concept_rebel$ side)
 4. Observe that $CAS$ cannot call $game_concept_coalition$ members ($POR$, $NAV$) to join the $game_concept_war$ because it is the attacker
-5. Observe that $FRA$ ($game_concept_defender$) CAN call $game_concept_allies$ ($ARA$, $PAP$) to join the defensive $game_concept_war$
+5. Observe that $FRA$ ($game_concept_defender$) CAN call $game_concept_allies$ ($ARA$, $PAP_papacy$) to join the defensive $game_concept_war$
 6. Result: $FRA$ can bypass the $game_concept_coalition$ to attack $CAS$ alone, while $CAS$ cannot obtain $game_concept_coalition$ or ally support
 7. Observe that $CAS$ will leave the $game_concept_coalition$ after the rebellion $game_concept_war$ ends
 
@@ -629,8 +629,8 @@ Load the $CAS$ save files. The saves demonstrate:
 - $CAS$ has conquered Loudun (French culture territory)
 - French $secessionists$ $game_concept_rebellion$ spawns as $game_concept_society_of_pops$ (<50% French culture population)
 - $FRA$ (culturally dominant) is forcibly called to support the $game_concept_rebellion$
-- $FRA$ has $game_concept_alliance$ with $ARA$ and $PAP$
-- $FRA$ has 100 $game_concept_favors$ with $ARA$ and $PAP$
+- $FRA$ has $game_concept_alliance$ with $ARA$ and $PAP_papacy$
+- $FRA$ has 100 $game_concept_favors$ with $ARA$ and $PAP_papacy$
 
 **Steps to observe Issue 4** (Attacker Ally Calling Using $game_concept_favors$):
 
@@ -639,17 +639,17 @@ Load the $CAS$ save files. The saves demonstrate:
    - $CAS$ has $game_concept_alliance$ with $POR$
    - Console: `conquer loudun`
    - Add rebel progress to 1 (100%)
-2. Load save 1337.5.1 - $FRA$ Ally $PAP$, $ARA$, $game_concept_favor$ 100
+2. Load save 1337.5.1 - $FRA$ Ally $PAP_papacy$, $ARA$, $game_concept_favor$ 100
    - Tag to play as $FRA$
-   - $FRA$ allied with $ARA$, $PAP$
+   - $FRA$ allied with $ARA$, $PAP_papacy$
    - Use console command `favor ARA 100` and `favor PAP 100` to add $game_concept_favor$
 3. Load save 1337.6.1 - $FRA$ Secessionist $game_concept_war$
    - $secessionists$ $game_concept_rebel$ breaks out on 1337.6.1
-   - $game_concept_society_of_pops$ $game_concept_rebel$ in Loudun is the $game_concept_war_leader$, hence $FRA$ cannot call $ARA$ and $PAP$ to arms
-4. Load save 1337.6.3 - $FRA$ Killed Landless $game_concept_rebel$, CAN Call $ARA$ and $PAP$
+   - $game_concept_society_of_pops$ $game_concept_rebel$ in Loudun is the $game_concept_war_leader$, hence $FRA$ cannot call $ARA$ and $PAP_papacy$ to arms
+4. Load save 1337.6.3 - $FRA$ Killed Landless $game_concept_rebel$, CAN Call $ARA$ and $PAP_papacy$
    - Use console command `kill_unit` to kill troops of $game_concept_society_of_pops$ $secessionists$ $game_concept_rebel$
    - $FRA$ becomes $game_concept_war_leader$
-   - $FRA$ can call $ARA$ and $PAP$ to join $game_concept_war$ using $game_concept_favors$
+   - $FRA$ can call $ARA$ and $PAP_papacy$ to join $game_concept_war$ using $game_concept_favors$
 
 ---
 
@@ -704,9 +704,9 @@ Save File ID: **#39d23961**
 **$CAS$ Saves - Attacker Ally Calling** (Issue 4 - VERIFIED):
 Save File ID: **#db345ae3**
 - 1337.5.1 - $CAS$ Ally $POR$, Conquer Loudun, Add Revolt 100%
-- 1337.5.1 - $FRA$ Ally $PAP$, $ARA$, $game_concept_favor$ 100
+- 1337.5.1 - $FRA$ Ally $PAP_papacy$, $ARA$, $game_concept_favor$ 100
 - 1337.6.1 - $FRA$ Secessionist $game_concept_war$
-- 1337.6.3 - $FRA$ Killed Landless $game_concept_rebel$, CAN Call $ARA$ and $PAP$
+- 1337.6.3 - $FRA$ Killed Landless $game_concept_rebel$, CAN Call $ARA$ and $PAP_papacy$
 
 ---
 
