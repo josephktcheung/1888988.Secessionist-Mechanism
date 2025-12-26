@@ -44,7 +44,7 @@ When a Personal Union Junior Partner is the culturally dominant Country for a Se
 
 This creates an inconsistency where Personal Union are vulnerable while some other subject types are protected.
 
-**VERIFICATION:** Tested with France (Senior Partner) and Sicily (Junior Partner). When Sicilian Secessionists Rebelled in France-controlled territory, Sicily was forcibly called, immediately breaking the Personal Union. When Sicily was a Vassal or Fiefdom instead, it was correctly excluded.
+**VERIFICATION:** Tested with France (Senior Partner) and Sicily (Junior Partner). When Sicilian Secessionists Rebels in France-controlled territory, Sicily was forcibly called, immediately breaking the Personal Union. When Sicily was a Vassal or Fiefdom instead, it was correctly excluded.
 
 ### Issue 3: Vassal War Leadership Problem (Severe)
 
@@ -80,13 +80,36 @@ There is a fundamental inconsistency in game logic regarding Vassal War leadersh
 
 When the player is the defensive War Leader, Allies can be asked to join. But when a Vassal is the defensive War Leader, the player cannot call Allies to join.
 
+**CRITICAL LIMITATION: Forcibly Called Culturally Dominant Country (Attacker) Cannot Call Allies Using Favors**
+
+When a same-culture Country is forcibly called to support a Secessionists Rebellion as the Attacker, it **cannot call its Allies using Favors** because it is not the War Leader (the Rebellion country is the War Leader). 
+
+**VERIFIED: Cannot Integrate Secessionists Vassal During War**
+
+It is **NOT possible** to integrate/annex a Secessionists Vassal during an ongoing War where the Secessionists Vassal is the War Leader. The game blocks annexation of countries that are in a Civil War (see `ANNEX_TARGET_CIVIL_WAR_PENALTY` localization: "is currently going through a [civil_war|e] and can not be annexed until peace has been restored").
+
+**ONLY Scenario Where Culturally Dominant Country CAN Call Allies:**
+
+**When the landless Secessionists Rebel is eliminated by the Defender**: If the Secessionists Rebellion spawns as a Society of Pops (landless with no territory) and its troops are eliminated by the Defender, the Rebellion is removed from the War. The war participant culturally dominant Country then becomes the War Leader automatically, and can call Allies using Favors (cost: 10 Favors per Ally).
+
+**Technical Verification:**
+- Secessionists Vassals CANNOT be integrated/annexed during an ongoing War where they are the War Leader (blocked by civil war restriction)
+- The `ask_join_war_for_favors` interaction requires the caller to be the War Leader (`attacker_leader = scope:actor` or `defender_leader = scope:actor`)
+- Cost: 10 Favors per Ally (from `ask_join_war_for_favors_cost`)
+- War leadership transfer: When the landless Rebel (War Leader) is eliminated, the remaining war participant automatically becomes the new War Leader
+
+**Impact:**
+- The forcibly called culturally dominant Country is at a severe disadvantage for the entire War, unable to call Allies unless the landless Rebel is eliminated by the Defender
+- This creates an asymmetric situation where the Defender can coordinate with Allies from day 1, while the culturally dominant Attacker cannot (see Issue 9)
+- The only way for the culturally dominant Attacker to gain the ability to call Allies depends on the Defender's actions (eliminating the landless Rebel), giving the Defender control over when the attacker can call Allies
+
 ### Issue 5: Coalition Bypass Mechanism (Severe Exploit)
 
 When a forcibly called Country is in a Coalition, it cannot call Coalition members to join the War because it is the Attacker. This allows the Defender to bypass Coalition restrictions and attack Coalition members individually.
 
 ### Issue 6: AI Vassal Suboptimal Peace Decisions
 
-AI Vassal may choose white peace instead of annexing the Revolter even when annexation cost is very low, causing players to lose territories they should have gained.
+AI Vassal may choose White Peace instead of annexing the Revolter even when annexation cost is very low, causing players to lose territories they should have gained.
 
 ### Issue 7: Overlord Forced to Join
 
@@ -103,16 +126,19 @@ A single local Secessionists Rebellion can escalate into a world War due to asym
 **Current EU5 System - Worse Than Historical World Wars:**
 
 When a Secessionists Rebellion breaks out:
-- The Defender CAN call all its Allies to join the defensive War
-- The forcibly called same-culture Country (Attacker) CANNOT call its own Allies because it is the Attacker
-- Result: A local Rebellion escalates into a major War where one Alliance bloc fights alone against another bloc's coordinated response
+- The Defender CAN call all its Allies to join the defensive War from day 1
+- The forcibly called same-culture Country (Attacker) CANNOT call its own Allies using Favors because it is NOT the War Leader (the Rebellion country is the War Leader)
+- **ONLY exception scenario where the culturally dominant Attacker CAN call Allies** (see Issue 4 for details):
+  - After the landless Secessionists Rebel is eliminated by the Defender (becomes War Leader automatically)
+- **VERIFIED: Cannot integrate Secessionists Vassal during War** - Annexation is blocked for countries in Civil War until peace is restored
+- Result: A local Rebellion escalates into a major War where one Alliance bloc fights alone against another bloc's coordinated response for the entire War (unless the Defender eliminates the landless Rebel, which is rare and gives the Defender control over when the attacker can call Allies)
 
 *Example Scenario (Late 18th Century - Partition Era):*
-- Two major Alliance blocs: Bloc A (Russia, Austria, Prussia) vs Bloc B (France, Ottomans, Sweden)
+- Two major Alliance blocs: Bloc A (Russia, Austria, Prussia) vs Bloc B (France, Ottomans, Sweden, Poland)
 - Polish Secessionists Rebellion breaks out in Russia-controlled territory
 - Poland (culturally dominant) is FORCED to join Rebellion's side (Attacker) - NO CHOICE
 - Russia (Defender) calls Austria and Prussia → 3 major powers vs Poland
-- Poland (Attacker) cannot call France, Ottomans, or Sweden → fights alone against 3 major powers
+- Poland (Attacker) cannot call France, Ottomans, or Sweden (its own allies in Bloc B) → fights alone against 3 major powers
 
 This creates a dangerous escalation mechanism where the Defender can systematically use Secessionists Rebellions to attack their enemies' Alliance blocs asymmetrically.
 
@@ -132,7 +158,7 @@ When a Secessionists Rebellion spawns as a Society of Pops (landless Country wit
 8. **England reaches 10 Warscore** - The Annex Revolter button becomes enabled when England reaches at least 10 Warscore (`MIN_WARSCORE_TO_DEMAND = 10` from game defines)
 9. **Annex Revolter button becomes available** - Once enabled, this peace option can be used on the war participant Country (France) instead of the eliminated Revolter
 10. **England uses Annex Revolter button** to annex the entire France Country
-11. **England annexes entire France** at low warscore cost (intended only for annexing the Revolter, not major powers like France)
+11. **England annexes entire France** at effectively 0 cost (base 25% cost from `take_country_nationalist` war goal, but reduced by -95% from `PEACE_COST_MODIFIER_FOR_REVOLT_WAR` modifier, making it effectively 0 cost). This is intended only for annexing the Revolter, not major powers like France
 12. **No Antagonism is generated** - annexing a major power like France should generate massive Antagonism, but the peace option generates none
 
 **Technical Details:**
@@ -140,7 +166,9 @@ When a Secessionists Rebellion spawns as a Society of Pops (landless Country wit
 - When `country_type = pop` troops are eliminated, the Rebellion is removed from the War
 - The war participant Country becomes War Leader automatically
 - **BUG:** The `take_country_nationalist` war goal has `type = take_country`, which allows annexing the entire Country via Annex Revolter button
+- **BUG:** The warscore cost is effectively 0 (base 25% from `conquer_cost = 0.25` in `take_country_nationalist`, but reduced by -95% from `PEACE_COST_MODIFIER_FOR_REVOLT_WAR = -0.95` modifier, making it effectively 0 cost)
 - **BUG:** No Antagonism is generated when annexing the war participant Country
+- **Note:** The Defender can theoretically conquer land at 25% cost if it is the War Leader (from `take_country_nationalist` war goal), but AI Vassal will never conquer land for its Overlord when the Vassal is the War Leader in a Secessionists Rebellion (see Issue 6)
 
 **Impact:**
 - **GAME-BREAKING:** Major powers like France (3rd largest Country at game start) can be annexed by smaller Countries like England through this exploit
@@ -217,7 +245,7 @@ When a Secessionists Rebellion spawns, its behavior differs dramatically based o
 
 **Example 2 - AI Not Taking Land:**
 - In some cases, the AI culturally dominant Country does not take any land even at 100% Warscore
-- The AI may only accept War Reparations or white peace, leaving the Defender with all territory intact
+- The AI may only accept War Reparations or White Peace, leaving the Defender with all territory intact
 - This is inconsistent with land-based Rebellions where the culturally dominant Country gains a Vassal
 
 **Example 3 - Landless Rebel Behavior (France vs Castile - VERIFIED):**
@@ -302,7 +330,7 @@ The Secessionists mechanism creates a severe exploit that allows knowledgeable p
 1. Player A (exploiter) acquires territories with the same primary culture as Player B (victim - AI or human player) through War 1 or from game start/previous conquests
 2. Player A intentionally allows or encourages Secessionists Rebellion to develop (Rebel progress approaching 100%)
 3. Player A wages War 2 against Player B when the Secessionists Rebellion is about to break out (Rebel progress near 100%)
-4. Player A makes white peace or gets a small amount of ransom, ending War 2 quickly, creating a new Truce period
+4. Player A makes White Peace or gets a small amount of ransom, ending War 2 quickly, creating a new Truce period
 5. Player A forms Alliance with other Countries/players during this new Truce period
 6. When Secessionists Rebellion breaks out:
    - Player B (culturally dominant) is FORCED to join the Rebellion's side (Attacker)
@@ -339,7 +367,7 @@ These issues are critical because:
 - **Inconsistent War leadership logic** - In normal War declarations, Overlords become War Leader when their Vassals are attacked, but in Secessionists Civil Wars, Vassals become War Leader instead. This creates unpredictable and inconsistent game logic that breaks player expectations
 - Personal Union break unexpectedly due to forced participation
 - Players receive severe penalties (-50 Stability) for actions they did not choose
-- **Rebellions that spawn as Society of Pops cause warscore costs to be applied to wrong target** - When Society of Pops troops are wiped out and Rebellion is eliminated, the War continues with the war participant Country as War Leader. The low warscore costs (intended only for annexing Rebels) remain active, allowing the Defender to annex the war participant Country at 25% cost instead of just the Rebels. This allows major powers like France (3rd largest Country at game start) to be annexed by smaller Countries like England
+- **Rebellions that spawn as Society of Pops cause warscore costs to be applied to wrong target** - When Society of Pops troops are wiped out and Rebellion is eliminated, the War continues with the war participant Country as War Leader. The Annex Revolter button (intended only for annexing Rebels) can then be used to annex the entire war participant Country at effectively 0 cost (base 25% cost from `take_country_nationalist` war goal, but reduced by -95% from `PEACE_COST_MODIFIER_FOR_REVOLT_WAR` modifier, making it effectively 0 cost). This allows major powers like France (3rd largest Country at game start) to be annexed by smaller Countries like England. **Note:** The Defender can theoretically conquer land at 25% cost if it is the War Leader, but AI Vassal will never conquer land for its Overlord when the Vassal is the War Leader in a Secessionists Rebellion (see Issue 6)
 - The mechanism can be systematically exploited by knowledgeable players in multiple ways (see EXPLOITATION SCENARIOS section)
 - The mechanism violates historical rationality
 - Players lose territories and strategic control due to AI decisions
@@ -407,8 +435,8 @@ Load the Byzantium save files. The saves are set up with:
 2. Occupy all rebel territories and transfer control to Vassal Hudavendigar
 3. Achieve 45%+ warscore
 4. Wait for AI Vassal Hudavendigar to make peace
-5. Observe that AI Vassal chooses white peace instead of annexing the Secessionists, even though annexation only costs 2 peace offer points
-6. Observe that Byzantium loses 7 locations which become new Secessionists, becoming a Vassal of Eretnids
+5. Observe that AI Vassal chooses White Peace instead of annexing the Secessionists, even though annexation only costs 2 Peace Offer points
+6. Observe that Byzantium loses 7 Locations which become new Secessionists, becoming a Vassal of Eretnids
 
 **Steps to observe Issue 7** (Overlord Forced to Join):
 
@@ -550,7 +578,7 @@ Load the France vs Castile landless rebel save files. The saves demonstrate:
 6. Load save 1337.8.1 - France 2. Set Cash 0
    - 2 months after save 3
    - Set cash to 0 to check gained War Reparations
-7. Load save 1337.8.11 - France 2. Gain 350.72 War Reparation, AAA00 Becomes landed INDEPENDENT
+7. Load save 1337.8.11 - France 2. Gain 314.82 War Reparation, AAA00 Becomes landed INDEPENDENT
    - 11 days after save 2
    - AAA00 made peace with Castile
    - Observe: France gained 314.82 ducats, and AAA00 is now a settled country but **NOT a Secessionists Vassal** of France
@@ -562,6 +590,37 @@ Load the France vs Castile landless rebel save files. The saves demonstrate:
   1. Becomes a landless Secessionists Vassal with 1 unit of cavalry (5 people) - effectively useless
   2. Becomes a settled country but **NOT a Secessionists Vassal** of France - completely independent
 - This demonstrates that the secessionist concept completely falls apart for landless rebels - there is almost no benefit to fighting in a secessionist War for a landless secessionist because the supposedly overlord France gains almost nothing, and the landless rebel does NOT become France's useful Vassal if it becomes settled
+
+### CASE 7: Castile SAVES - ATTACKER ALLY CALLING (Demonstrates Issue 4 - VERIFIED)
+
+Save File ID: **#db345ae3**
+
+Load the Castile save files. The saves demonstrate:
+- Castile has Alliance with Portugal
+- Castile has conquered Loudun (French culture territory)
+- French Secessionists Rebellion spawns as Society of Pops (<50% French culture population)
+- France (culturally dominant) is forcibly called to support the Rebellion
+- France has Alliance with Aragon and Rome
+- France has 100 Favors with Aragon and Rome
+
+**Steps to observe Issue 4** (Attacker Ally Calling Using Favors):
+
+1. Load save 1337.5.1 - Castile Ally Portugal, Conquer Loudun, Add Revolt 100%
+   - Play as Castile
+   - Castile has Alliance with Portugal
+   - Console: `conquer loudun`
+   - Add rebel progress to 1 (100%)
+2. Load save 1337.5.1 - France Ally Rome, Aragon, Favor 100
+   - Tag to play as France
+   - France allied with Aragon, Rome
+   - Use console command `favor ARA 100` and `favor PAP 100` to add Favor
+3. Load save 1337.6.1 - France Secessionist War
+   - Secessionists Rebel breaks out on 1337.6.1
+   - Society of Pops Rebel in Loudun is the War Leader, hence France cannot call Aragon and Rome to arms
+4. Load save 1337.6.3 - France Killed Landless Rebel, CAN Call Aragon and Rome
+   - Use console command `kill_unit` to kill troops of Society of Pops Secessionists Rebel
+   - France becomes War Leader
+   - France can call Aragon and Rome to join War using Favors
 
 ---
 
@@ -611,7 +670,14 @@ Save File ID: **#39d23961**
 - 1337.8.1 - France 1. Set Cash 0
 - 1337.8.9 - France 1. Gain 350.72 War Reparation, AAA00 Becomes Landless Secessionist
 - 1337.8.1 - France 2. Set Cash 0
-- 1337.8.11 - France 2. Gain 350.72 War Reparation, AAA00 Becomes landed INDEPENDENT
+- 1337.8.11 - France 2. Gain 314.82 War Reparation, AAA00 Becomes landed INDEPENDENT
+
+**Castile Saves - Attacker Ally Calling** (Issue 4 - VERIFIED):
+Save File ID: **#db345ae3**
+- 1337.5.1 - Castile Ally Portugal, Conquer Loudun, Add Revolt 100%
+- 1337.5.1 - France Ally Rome, Aragon, Favor 100
+- 1337.6.1 - France Secessionist War
+- 1337.6.3 - France Killed Landless Rebel, CAN Call Aragon and Rome
 
 ---
 

@@ -44,7 +44,7 @@ When a $game_concept_personal_union$ $game_concept_junior_partner$ is the cultur
 
 This creates an inconsistency where $game_concept_personal_union$ are vulnerable while some other subject types are protected.
 
-**VERIFICATION:** Tested with $FRA$ ($game_concept_senior_partner$) and $SIC$ ($game_concept_junior_partner$). When Sicilian $secessionists$ $game_concept_rebel$led in $FRA$-controlled territory, $SIC$ was forcibly called, immediately breaking the $game_concept_personal_union$. When $SIC$ was a $vassal$ or $fiefdom$ instead, it was correctly excluded.
+**VERIFICATION:** Tested with $FRA$ ($game_concept_senior_partner$) and $SIC$ ($game_concept_junior_partner$). When Sicilian $secessionists$ $game_concept_rebel$s in $FRA$-controlled territory, $SIC$ was forcibly called, immediately breaking the $game_concept_personal_union$. When $SIC$ was a $vassal$ or $fiefdom$ instead, it was correctly excluded.
 
 ### Issue 3: $vassal$ $game_concept_war$ Leadership Problem (Severe)
 
@@ -80,13 +80,36 @@ There is a fundamental inconsistency in game logic regarding $vassal$ $game_conc
 
 When the player is the defensive $game_concept_war_leader$, $game_concept_allies$ can be asked to join. But when a $vassal$ is the defensive $game_concept_war_leader$, the player cannot call $game_concept_allies$ to join.
 
+**CRITICAL LIMITATION: Forcibly Called Culturally Dominant $game_concept_country$ ($game_concept_attacker$) Cannot Call $game_concept_allies$ Using $game_concept_favors$**
+
+When a same-culture $game_concept_country$ is forcibly called to support a $secessionists$ $game_concept_rebellion$ as the $game_concept_attacker$, it **cannot call its $game_concept_allies$ using $game_concept_favors$** because it is not the $game_concept_war_leader$ (the $game_concept_rebellion$ country is the $game_concept_war_leader$). 
+
+**VERIFIED: Cannot Integrate $secessionists$ $vassal$ During $game_concept_war$**
+
+It is **NOT possible** to integrate/annex a $secessionists$ $vassal$ during an ongoing $game_concept_war$ where the $secessionists$ $vassal$ is the $game_concept_war_leader$. The game blocks annexation of countries that are in a $game_concept_civil_war$ (see `ANNEX_TARGET_CIVIL_WAR_PENALTY` localization: "is currently going through a [civil_war|e] and can not be annexed until peace has been restored").
+
+**ONLY Scenario Where Culturally Dominant $game_concept_country$ CAN Call $game_concept_allies$:**
+
+**When the landless $secessionists$ $game_concept_rebel$ is eliminated by the $game_concept_defender$**: If the $secessionists$ $game_concept_rebellion$ spawns as a $game_concept_society_of_pops$ (landless with no territory) and its troops are eliminated by the $game_concept_defender$, the $game_concept_rebellion$ is removed from the $game_concept_war$. The war participant culturally dominant $game_concept_country$ then becomes the $game_concept_war_leader$ automatically, and can call $game_concept_allies$ using $game_concept_favors$ (cost: 10 $game_concept_favors$ per $game_concept_ally$).
+
+**Technical Verification:**
+- $secessionists$ $vassal$s CANNOT be integrated/annexed during an ongoing $game_concept_war$ where they are the $game_concept_war_leader$ (blocked by civil war restriction)
+- The `ask_join_war_for_favors` interaction requires the caller to be the $game_concept_war_leader$ (`attacker_leader = scope:actor` or `defender_leader = scope:actor`)
+- Cost: 10 $game_concept_favors$ per $game_concept_ally$ (from `ask_join_war_for_favors_cost`)
+- War leadership transfer: When the landless $game_concept_rebel$ ($game_concept_war_leader$) is eliminated, the remaining war participant automatically becomes the new $game_concept_war_leader$
+
+**Impact:**
+- The forcibly called culturally dominant $game_concept_country$ is at a severe disadvantage for the entire $game_concept_war$, unable to call $game_concept_allies$ unless the landless $game_concept_rebel$ is eliminated by the $game_concept_defender$
+- This creates an asymmetric situation where the $game_concept_defender$ can coordinate with $game_concept_allies$ from day 1, while the culturally dominant $game_concept_attacker$ cannot (see Issue 9)
+- The only way for the culturally dominant $game_concept_attacker$ to gain the ability to call $game_concept_allies$ depends on the $game_concept_defender$'s actions (eliminating the landless $game_concept_rebel$), giving the $game_concept_defender$ control over when the attacker can call $game_concept_allies$
+
 ### Issue 5: $game_concept_coalition$ Bypass Mechanism (Severe Exploit)
 
 When a forcibly called $game_concept_country$ is in a $game_concept_coalition$, it cannot call $game_concept_coalition$ members to join the $game_concept_war$ because it is the $game_concept_attacker$. This allows the $game_concept_defender$ to bypass $game_concept_coalition$ restrictions and attack $game_concept_coalition$ members individually.
 
 ### Issue 6: AI $vassal$ Suboptimal Peace Decisions
 
-AI $vassal$ may choose white peace instead of annexing the $game_concept_revolter$ even when annexation cost is very low, causing players to lose territories they should have gained.
+AI $vassal$ may choose $game_concept_white_peace$ instead of annexing the $game_concept_revolter$ even when annexation cost is very low, causing players to lose territories they should have gained.
 
 ### Issue 7: Overlord Forced to Join
 
@@ -103,16 +126,19 @@ A single local $secessionists$ $game_concept_rebellion$ can escalate into a worl
 **Current EU5 System - Worse Than Historical World Wars:**
 
 When a $secessionists$ $game_concept_rebellion$ breaks out:
-- The $game_concept_defender$ CAN call all its $game_concept_allies$ to join the defensive $game_concept_war$
-- The forcibly called same-culture $game_concept_country$ ($game_concept_attacker$) CANNOT call its own $game_concept_allies$ because it is the $game_concept_attacker$
-- Result: A local $game_concept_rebellion$ escalates into a major $game_concept_war$ where one $game_concept_alliance$ bloc fights alone against another bloc's coordinated response
+- The $game_concept_defender$ CAN call all its $game_concept_allies$ to join the defensive $game_concept_war$ from day 1
+- The forcibly called same-culture $game_concept_country$ ($game_concept_attacker$) CANNOT call its own $game_concept_allies$ using $game_concept_favors$ because it is NOT the $game_concept_war_leader$ (the $game_concept_rebellion$ country is the $game_concept_war_leader$)
+- **ONLY exception scenario where the culturally dominant $game_concept_attacker$ CAN call $game_concept_allies$** (see Issue 4 for details):
+  - After the landless $secessionists$ $game_concept_rebel$ is eliminated by the $game_concept_defender$ (becomes $game_concept_war_leader$ automatically)
+- **VERIFIED: Cannot integrate $secessionists$ $vassal$ during $game_concept_war$** - Annexation is blocked for countries in $game_concept_civil_war$ until peace is restored
+- Result: A local $game_concept_rebellion$ escalates into a major $game_concept_war$ where one $game_concept_alliance$ bloc fights alone against another bloc's coordinated response for the entire $game_concept_war$ (unless the $game_concept_defender$ eliminates the landless $game_concept_rebel$, which is rare and gives the $game_concept_defender$ control over when the attacker can call $game_concept_allies$)
 
 *Example Scenario (Late 18th Century - Partition Era):*
-- Two major $game_concept_alliance$ blocs: Bloc A ($RUS$, $HAB$, $PRU$) vs Bloc B ($FRA$, $TUR$, $SWE$)
+- Two major $game_concept_alliance$ blocs: Bloc A ($RUS$, $HAB$, $PRU$) vs Bloc B ($FRA$, $TUR$, $SWE$, $POL$)
 - Polish $secessionists$ $game_concept_rebellion$ breaks out in $RUS$-controlled territory
 - $POL$ (culturally dominant) is FORCED to join $game_concept_rebellion$'s side ($game_concept_attacker$) - NO CHOICE
 - $RUS$ ($game_concept_defender$) calls $HAB$ and $PRU$ → 3 major powers vs $POL$
-- $POL$ ($game_concept_attacker$) cannot call $FRA$, $TUR$, or $SWE$ → fights alone against 3 major powers
+- $POL$ ($game_concept_attacker$) cannot call $FRA$, $TUR$, or $SWE$ (its own $game_concept_allies$ in Bloc B) → fights alone against 3 major powers
 
 This creates a dangerous escalation mechanism where the $game_concept_defender$ can systematically use $secessionists$ $game_concept_rebellions$ to attack their enemies' $game_concept_alliance$ blocs asymmetrically.
 
@@ -132,7 +158,7 @@ When a $secessionists$ $game_concept_rebellion$ spawns as a $game_concept_societ
 8. **$ENG$ reaches 10 $game_concept_war_score$** - The $WAR_LATERALVIEW_ANNEX_REVOLTER$ button becomes enabled when $ENG$ reaches at least 10 $game_concept_war_score$ (`MIN_WARSCORE_TO_DEMAND = 10` from game defines)
 9. **$WAR_LATERALVIEW_ANNEX_REVOLTER$ button becomes available** - Once enabled, this peace option can be used on the war participant $game_concept_country$ ($FRA$) instead of the eliminated $game_concept_revolter$
 10. **$ENG$ uses $WAR_LATERALVIEW_ANNEX_REVOLTER$ button** to annex the entire $FRA$ $game_concept_country$
-11. **$ENG$ annexes entire $FRA$** at low warscore cost (intended only for annexing the $game_concept_revolter$, not major powers like $FRA$)
+11. **$ENG$ annexes entire $FRA$** at effectively 0 cost (base 25% cost from `take_country_nationalist` war goal, but reduced by -95% from `PEACE_COST_MODIFIER_FOR_REVOLT_WAR` modifier, making it effectively 0 cost). This is intended only for annexing the $game_concept_revolter$, not major powers like $FRA$
 12. **No $game_concept_antagonism$ is generated** - annexing a major power like $FRA$ should generate massive $game_concept_antagonism$, but the peace option generates none
 
 **Technical Details:**
@@ -140,7 +166,9 @@ When a $secessionists$ $game_concept_rebellion$ spawns as a $game_concept_societ
 - When `country_type = pop` troops are eliminated, the $game_concept_rebellion$ is removed from the $game_concept_war$
 - The war participant $game_concept_country$ becomes $game_concept_war_leader$ automatically
 - **BUG:** The `take_country_nationalist` war goal has `type = take_country`, which allows annexing the entire $game_concept_country$ via $WAR_LATERALVIEW_ANNEX_REVOLTER$ button
+- **BUG:** The warscore cost is effectively 0 (base 25% from `conquer_cost = 0.25` in `take_country_nationalist`, but reduced by -95% from `PEACE_COST_MODIFIER_FOR_REVOLT_WAR = -0.95` modifier, making it effectively 0 cost)
 - **BUG:** No $game_concept_antagonism$ is generated when annexing the war participant $game_concept_country$
+- **Note:** The $game_concept_defender$ can theoretically conquer land at 25% cost if it is the $game_concept_war_leader$ (from `take_country_nationalist` war goal), but AI $vassal$ will never conquer land for its $game_concept_overlord$ when the $vassal$ is the $game_concept_war_leader$ in a $secessionists$ $game_concept_rebellion$ (see Issue 6)
 
 **Impact:**
 - **GAME-BREAKING:** Major powers like $FRA$ (3rd largest $game_concept_country$ at game start) can be annexed by smaller $game_concept_countries$ like $ENG$ through this exploit
@@ -217,7 +245,7 @@ When a $secessionists$ $game_concept_rebellion$ spawns, its behavior differs dra
 
 **Example 2 - AI Not Taking Land:**
 - In some cases, the AI culturally dominant $game_concept_country$ does not take any land even at 100% $game_concept_war_score$
-- The AI may only accept $game_concept_war_reparations$ or white peace, leaving the $game_concept_defender$ with all territory intact
+- The AI may only accept $game_concept_war_reparations$ or $game_concept_white_peace$, leaving the $game_concept_defender$ with all territory intact
 - This is inconsistent with land-based $game_concept_rebellions$ where the culturally dominant $game_concept_country$ gains a $vassal$
 
 **Example 3 - Landless Rebel Behavior ($FRA$ vs $CAS$ - VERIFIED):**
@@ -302,7 +330,7 @@ The $secessionists$ mechanism creates a severe exploit that allows knowledgeable
 1. Player A (exploiter) acquires territories with the same primary culture as Player B (victim - AI or human player) through War 1 or from game start/previous conquests
 2. Player A intentionally allows or encourages $secessionists$ $game_concept_rebellion$ to develop ($game_concept_rebel$ progress approaching 100%)
 3. Player A wages War 2 against Player B when the $secessionists$ $game_concept_rebellion$ is about to break out ($game_concept_rebel$ progress near 100%)
-4. Player A makes white peace or gets a small amount of ransom, ending War 2 quickly, creating a new $game_concept_truce$ period
+4. Player A makes $game_concept_white_peace$ or gets a small amount of ransom, ending War 2 quickly, creating a new $game_concept_truce$ period
 5. Player A forms $game_concept_alliance$ with other $game_concept_countries$/players during this new $game_concept_truce$ period
 6. When $secessionists$ $game_concept_rebellion$ breaks out:
    - Player B (culturally dominant) is FORCED to join the $game_concept_rebellion$'s side ($game_concept_attacker$)
@@ -339,7 +367,7 @@ These issues are critical because:
 - **Inconsistent $game_concept_war$ leadership logic** - In normal $game_concept_war$ declarations, $game_concept_overlords$ become $game_concept_war_leader$ when their $vassal$s are attacked, but in $secessionists$ $game_concept_civil_war$s, $vassal$s become $game_concept_war_leader$ instead. This creates unpredictable and inconsistent game logic that breaks player expectations
 - $game_concept_personal_union$ break unexpectedly due to forced participation
 - Players receive severe penalties (-50 $game_concept_stability$) for actions they did not choose
-- **$game_concept_rebellions$ that spawn as $game_concept_society_of_pops$ cause warscore costs to be applied to wrong target** - When $game_concept_society_of_pops$ troops are wiped out and $game_concept_rebellion$ is eliminated, the $game_concept_war$ continues with the war participant $game_concept_country$ as $game_concept_war_leader$. The low warscore costs (intended only for annexing $game_concept_rebels$) remain active, allowing the $game_concept_defender$ to annex the war participant $game_concept_country$ at 25% cost instead of just the $game_concept_rebels$. This allows major powers like $FRA$ (3rd largest $game_concept_country$ at game start) to be annexed by smaller $game_concept_countries$ like $ENG$
+- **$game_concept_rebellions$ that spawn as $game_concept_society_of_pops$ cause warscore costs to be applied to wrong target** - When $game_concept_society_of_pops$ troops are wiped out and $game_concept_rebellion$ is eliminated, the $game_concept_war$ continues with the war participant $game_concept_country$ as $game_concept_war_leader$. The $WAR_LATERALVIEW_ANNEX_REVOLTER$ button (intended only for annexing $game_concept_rebels$) can then be used to annex the entire war participant $game_concept_country$ at effectively 0 cost (base 25% cost from `take_country_nationalist` war goal, but reduced by -95% from `PEACE_COST_MODIFIER_FOR_REVOLT_WAR` modifier, making it effectively 0 cost). This allows major powers like $FRA$ (3rd largest $game_concept_country$ at game start) to be annexed by smaller $game_concept_countries$ like $ENG$. **Note:** The $game_concept_defender$ can theoretically conquer land at 25% cost if it is the $game_concept_war_leader$, but AI $vassal$ will never conquer land for its $game_concept_overlord$ when the $vassal$ is the $game_concept_war_leader$ in a $secessionists$ $game_concept_rebellion$ (see Issue 6)
 - The mechanism can be systematically exploited by knowledgeable players in multiple ways (see EXPLOITATION SCENARIOS section)
 - The mechanism violates historical rationality
 - Players lose territories and strategic control due to AI decisions
@@ -407,8 +435,8 @@ Load the $BYZ$ save files. The saves are set up with:
 2. Occupy all rebel territories and transfer control to $vassal$ Hudavendigar
 3. Achieve 45%+ warscore
 4. Wait for AI $vassal$ Hudavendigar to make peace
-5. Observe that AI $vassal$ chooses white peace instead of annexing the Secessionists, even though annexation only costs 2 peace offer points
-6. Observe that $BYZ$ loses 7 locations which become new Secessionists, becoming a $vassal$ of $ERE$
+5. Observe that AI $vassal$ chooses $game_concept_white_peace$ instead of annexing the $secessionists$, even though annexation only costs 2 $game_concept_peace_offer$ points
+6. Observe that $BYZ$ loses 7 $game_concept_locations$ which become new $secessionists$, becoming a $vassal$ of $ERE$
 
 **Steps to observe Issue 7** (Overlord Forced to Join):
 
@@ -550,7 +578,7 @@ Load the $FRA$ vs $CAS$ landless rebel save files. The saves demonstrate:
 6. Load save 1337.8.1 - $FRA$ 2. Set Cash 0
    - 2 months after save 3
    - Set cash to 0 to check gained $game_concept_war_reparations$
-7. Load save 1337.8.11 - $FRA$ 2. Gain 350.72 War Reparation, AAA00 Becomes landed INDEPENDENT
+7. Load save 1337.8.11 - $FRA$ 2. Gain 314.82 War Reparation, AAA00 Becomes landed INDEPENDENT
    - 11 days after save 2
    - AAA00 made peace with $CAS$
    - Observe: $FRA$ gained 314.82 ducats, and AAA00 is now a settled country but **NOT a $secessionists$ $vassal$** of $FRA$
@@ -562,6 +590,37 @@ Load the $FRA$ vs $CAS$ landless rebel save files. The saves demonstrate:
   1. Becomes a landless $secessionists$ $vassal$ with 1 unit of cavalry (5 people) - effectively useless
   2. Becomes a settled country but **NOT a $secessionists$ $vassal$** of $FRA$ - completely independent
 - This demonstrates that the secessionist concept completely falls apart for landless rebels - there is almost no benefit to fighting in a secessionist $game_concept_war$ for a landless secessionist because the supposedly overlord $FRA$ gains almost nothing, and the landless rebel does NOT become $FRA$'s useful $vassal$ if it becomes settled
+
+### CASE 7: $CAS$ SAVES - ATTACKER ALLY CALLING (Demonstrates Issue 4 - VERIFIED)
+
+Save File ID: **#db345ae3**
+
+Load the $CAS$ save files. The saves demonstrate:
+- $CAS$ has $game_concept_alliance$ with $POR$
+- $CAS$ has conquered Loudun (French culture territory)
+- French $secessionists$ $game_concept_rebellion$ spawns as $game_concept_society_of_pops$ (<50% French culture population)
+- $FRA$ (culturally dominant) is forcibly called to support the $game_concept_rebellion$
+- $FRA$ has $game_concept_alliance$ with $ARA$ and $PAP$
+- $FRA$ has 100 $game_concept_favors$ with $ARA$ and $PAP$
+
+**Steps to observe Issue 4** (Attacker Ally Calling Using $game_concept_favors$):
+
+1. Load save 1337.5.1 - $CAS$ Ally $POR$, Conquer Loudun, Add Revolt 100%
+   - Play as $CAS$
+   - $CAS$ has $game_concept_alliance$ with $POR$
+   - Console: `conquer loudun`
+   - Add rebel progress to 1 (100%)
+2. Load save 1337.5.1 - $FRA$ Ally $PAP$, $ARA$, $game_concept_favor$ 100
+   - Tag to play as $FRA$
+   - $FRA$ allied with $ARA$, $PAP$
+   - Use console command `favor ARA 100` and `favor PAP 100` to add $game_concept_favor$
+3. Load save 1337.6.1 - $FRA$ Secessionist $game_concept_war$
+   - $secessionists$ $game_concept_rebel$ breaks out on 1337.6.1
+   - $game_concept_society_of_pops$ $game_concept_rebel$ in Loudun is the $game_concept_war_leader$, hence $FRA$ cannot call $ARA$ and $PAP$ to arms
+4. Load save 1337.6.3 - $FRA$ Killed Landless $game_concept_rebel$, CAN Call $ARA$ and $PAP$
+   - Use console command `kill_unit` to kill troops of $game_concept_society_of_pops$ $secessionists$ $game_concept_rebel$
+   - $FRA$ becomes $game_concept_war_leader$
+   - $FRA$ can call $ARA$ and $PAP$ to join $game_concept_war$ using $game_concept_favors$
 
 ---
 
@@ -611,7 +670,14 @@ Save File ID: **#39d23961**
 - 1337.8.1 - $FRA$ 1. Set Cash 0
 - 1337.8.9 - $FRA$ 1. Gain 350.72 War Reparation, AAA00 Becomes Landless Secessionist
 - 1337.8.1 - $FRA$ 2. Set Cash 0
-- 1337.8.11 - $FRA$ 2. Gain 350.72 War Reparation, AAA00 Becomes landed INDEPENDENT
+- 1337.8.11 - $FRA$ 2. Gain 314.82 War Reparation, AAA00 Becomes landed INDEPENDENT
+
+**$CAS$ Saves - Attacker Ally Calling** (Issue 4 - VERIFIED):
+Save File ID: **#db345ae3**
+- 1337.5.1 - $CAS$ Ally $POR$, Conquer Loudun, Add Revolt 100%
+- 1337.5.1 - $FRA$ Ally $PAP$, $ARA$, $game_concept_favor$ 100
+- 1337.6.1 - $FRA$ Secessionist $game_concept_war$
+- 1337.6.3 - $FRA$ Killed Landless $game_concept_rebel$, CAN Call $ARA$ and $PAP$
 
 ---
 
